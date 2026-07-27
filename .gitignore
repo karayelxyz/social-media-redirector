@@ -1,0 +1,6 @@
+dist-firefox/
+*.zip
+*.xpi
+*.crx
+*.pem
+key.bin

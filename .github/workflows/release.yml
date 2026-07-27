@@ -1,0 +1,121 @@
+name: Auto Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version (leave empty to use manifest.json)'
+        required: false
+  push:
+    branches: [main]
+    paths:
+      - 'manifest.json'
+      - 'manifest-firefox.json'
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
+      - name: Clean up old deployment records
+        uses: strumwolf/delete-deployment-environment@v4.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: github-pages
+          onlyRemoveDeployments: true
+
+      - name: Read version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(jq -r '.version' manifest.json)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Tag already exists?
+        id: tag_check
+        run: |
+          if git tag -l "v${{ steps.version.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Chrome ZIP + CRX
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          CRX_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+        run: |
+          mkdir -p dist-chrome
+          cp manifest.json background.js popup.html popup.js dist-chrome/
+          cp -r images dist-chrome/
+          cd dist-chrome && zip -r ../social-media-redirector-chrome.zip . && cd ..
+          if [ -n "$CRX_KEY" ]; then
+            printf '%s' "$CRX_KEY" | base64 -d > key.bin 2>/dev/null || true
+            openssl pkey -in key.bin -inform DER -out key.pem 2>/dev/null ||
+              cp key.bin key.pem
+            openssl rsa -in key.pem -check -noout 2>/dev/null || openssl genrsa -out key.pem 2048
+          else
+            openssl genrsa -out key.pem 2048
+          fi
+          npx -y crx3@latest -p key.pem -o social-media-redirector-chrome.crx dist-chrome/
+
+      - name: Build Firefox ZIP
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          mkdir -p dist-firefox
+          cp manifest-firefox.json dist-firefox/manifest.json
+          cp background.js popup.html popup.js dist-firefox/
+          cp -r images dist-firefox/
+          cd dist-firefox && zip -r ../social-media-redirector-firefox.zip . && cd ..
+
+      - name: Sign Firefox addon
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          if [ -z "$AMO_JWT_ISSUER" ] || [ -z "$AMO_JWT_SECRET" ]; then
+            echo "AMO_JWT_ISSUER or AMO_JWT_SECRET not set — skipping Firefox signing"
+            exit 0
+          fi
+          mkdir -p /tmp/firefox-out
+          npx -y web-ext sign \
+            --source-dir dist-firefox \
+            --artifacts-dir /tmp/firefox-out \
+            --channel=unlisted \
+            --api-key="$AMO_JWT_ISSUER" \
+            --api-secret="$AMO_JWT_SECRET" && {
+            echo "web-ext sign succeeded"
+            cp /tmp/firefox-out/*.xpi social-media-redirector-firefox.xpi 2>/dev/null || true
+            ls -la social-media-redirector-firefox.xpi
+          } || {
+            echo "web-ext sign failed (version may already exist on AMO) — release continues without .xpi"
+          }
+
+      - name: Create Release
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          ASSETS=""
+          [ -f social-media-redirector-chrome.zip ] && ASSETS="$ASSETS social-media-redirector-chrome.zip"
+          [ -f social-media-redirector-chrome.crx ] && ASSETS="$ASSETS social-media-redirector-chrome.crx"
+          [ -f social-media-redirector-firefox.zip ] && ASSETS="$ASSETS social-media-redirector-firefox.zip"
+          [ -f social-media-redirector-firefox.xpi ] && ASSETS="$ASSETS social-media-redirector-firefox.xpi"
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists — uploading assets"
+            gh release upload "$TAG" $ASSETS --clobber
+          else
+            echo "Creating release $TAG"
+            gh release create "$TAG" --title "$TAG" --generate-notes $ASSETS
+          fi

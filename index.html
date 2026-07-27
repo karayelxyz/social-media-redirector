@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Social Media Redirector</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 2em 1em; line-height: 1.6; color: #c9d1d9; background: #0d1117; }
+img { max-width: 100%; }
+a { color: #58a6ff; }
+code { background: #21262d; padding: .2em .4em; border-radius: 3px; font-size: .9em; }
+pre { background: #21262d; padding: 1em; border-radius: 6px; overflow-x: auto; font-size: 1em; }
+h1 { border-bottom: 1px solid #21262d; padding-bottom: .3em; }
+h2 { margin-top: 1.5em; }
+table { border-collapse: collapse; width: 100%; }
+td, th { border: 1px solid #30363d; padding: 6px 13px; text-align: left; }
+tr:nth-child(even) { background: #161b22; }
+.store-buttons { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 1em 0; }
+.store-buttons a { display: inline-block; }
+.store-buttons img { height: 56px; display: block; }
+.pre-wrapper { position: relative; }
+.copy-btn { position: absolute; top: 8px; right: 8px; background: #30363d; color: #c9d1d9; border: 1px solid #484f58; border-radius: 4px; padding: 2px 8px; font-size: .8em; cursor: pointer; z-index: 1; }
+.copy-btn.copied { border-color: #3fb950; color: #3fb950; }
+</style>
+</head>
+<body>
+
+<p><img src="assets/cover.png" alt="Social Media Redirector Cover"></p>
+
+<h1>Social Media Redirector</h1>
+
+<p>A browser extension that redirects social media pages to privacy-respecting front-ends.</p>
+
+<table>
+  <tr><th>Platform</th><th>Original</th><th>Redirect</th></tr>
+  <tr><td>Instagram</td><td>instagram.com</td><td>imginn.com</td></tr>
+  <tr><td>X</td><td>x.com</td><td>nitter.us.catsarch.com</td></tr>
+  <tr><td>TikTok</td><td>tiktok.com</td><td>exporttok.com</td></tr>
+  <tr><td>Threads</td><td>threads.com</td><td>shoelace.mint.lgbt</td></tr>
+</table>
+
+<h2>Installation</h2>
+
+<div class="store-buttons">
+  <a href="https://chromewebstore.google.com/detail/social-media-redirector/gckenkjdlidnignifbbobohimoilmgcg"><img src="assets/chrome.png" alt="Chrome Web Store"></a>
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/social-media-redirector/"><img src="assets/firefox.png" alt="Firefox Add-ons"></a>
+</div>
+
+<h3>Manual (developer mode)</h3>
+
+<p><strong>Chrome:</strong></p>
+<ol>
+  <li>Download the <a href="https://github.com/karayelxyz/social-media-redirector/releases">latest release</a> (zip or crx)</li>
+  <li>Open <code>chrome://extensions/</code></li>
+  <li>Enable <strong>Developer mode</strong></li>
+  <li>Click <strong>Load unpacked</strong> and select the <code>social-media-redirector</code> folder</li>
+</ol>
+
+<p><strong>Firefox:</strong></p>
+<ol>
+  <li>Download the <a href="https://github.com/karayelxyz/social-media-redirector/releases">latest release</a> (signed .xpi)</li>
+  <li>Open <code>about:addons</code></li>
+  <li>Click the gear icon → <strong>Install Add-on From File</strong></li>
+  <li>Select the <code>.xpi</code> file</li>
+</ol>
+
+<h2>Bookmarklet</h2>
+<p>Works on any browser (iOS Safari, Firefox, etc.). Create a new bookmark and paste the following as the URL:</p>
+<div class="pre-wrapper"><button class="copy-btn">Copy</button>
+<pre style="word-break:break-all">javascript:(function(){var%20u=new%20URL(window.location.href),h=u.hostname,p=u.pathname,s=u.searchParams,m;if(h.indexOf(%27instagram.com%27)>=0){if(p.indexOf(%27/accounts/login%27)>=0){var%20n=s.get(%27next%27);if(n){var%20pt=n.indexOf(%27http%27)===0?new%20URL(n).pathname:n.split(%27?%27)[0];var%20al=[%27/explore%27,%27/direct%27,%27/accounts%27,%27/about%27,%27/hacked%27,%27/privacy%27,%27/popular%27];if(!al.some(function(x){return%20pt.indexOf(x)===0})){if(m=pt.match(/\/(?:p|reels?)\/([^/]+)/)){window.location.href=%27https://imginn.com/p/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/]+)\/reels?/)){window.location.href=%27https://imginn.com/reels/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/]+)\/tagged/)){window.location.href=%27https://imginn.com/tagged/%27+m[1]+%27/%27;return}if(m=pt.match(/\/stories\/([^/]+)/)){window.location.href=%27https://imginn.com/stories/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/?#]+)/)){window.location.href=%27https://imginn.com/%27+m[1]+%27/%27;return}}}return}var%20a=[%27/explore%27,%27/direct%27,%27/accounts%27,%27/about%27,%27/hacked%27,%27/privacy%27,%27/popular%27];if(a.some(function(x){return%20p.indexOf(x)===0}))return;if(m=p.match(/\/(?:p|reels?)\/([^/]+)/)){window.location.href=%27https://imginn.com/p/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/]+)\/reels?/)){window.location.href=%27https://imginn.com/reels/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/]+)\/tagged/)){window.location.href=%27https://imginn.com/tagged/%27+m[1]+%27/%27}else%20if(m=p.match(/\/stories\/([^/]+)/)){window.location.href=%27https://imginn.com/stories/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/?#]+)/)){window.location.href=%27https://imginn.com/%27+m[1]+%27/%27}}else%20if(h.indexOf(%27x.com%27)>=0){if(p.indexOf(%27/i/jf/onboarding%27)>=0||p.indexOf(%27/i/flow%27)>=0){var%20r=s.get(%27redirect_after_login%27);if(r){var%20d=decodeURIComponent(r);var%20ht=d.match(/^\/hashtag\/([^?#]+)/);if(ht){window.location.href=%27https://nitter.us.catsarch.com/search?f=tweets&q=%2523%27+encodeURIComponent(ht[1].split(%27?%27)[0].split(%27#%27)[0])+%27%27;return}window.location.href=%27https://nitter.us.catsarch.com%27+d;return}}return}window.location.href=%27https://nitter.us.catsarch.com%27+p}if(h.indexOf(%27tiktok.com%27)>=0){if(m=p.match(/^\/(@[^/]+)\/(?:video|photo)\/(\d+)/)){window.location.href=%27https://exporttok.com/tiktok/account/viewer/%27+m[1]+%27/%27+m[2]}else%20if(m=p.match(/^\/(@[^/]+)/)){window.location.href=%27https://exporttok.com/tiktok/account/%27+m[1]}}if(h.indexOf(%27threads.com%27)>=0){var%20ta=[%27/login%27,%27/search%27,%27/explore%27,%27/activity%27,%27/settings%27,%27/api%27,%27/share%27];if(ta.some(function(x){return%20p.indexOf(x)===0}))return;if(m=p.match(/^\/@[^/]+\/post\/([^/]+)/)){window.location.href=%27https://shoelace.mint.lgbt/t/%27+m[1]}else%20if(m=p.match(/^\/(@[^/?#]+)/)){window.location.href=%27https://shoelace.mint.lgbt/%27+m[1]}}})();</pre></div>
+
+<h2>Build from Source</h2>
+
+<p><strong>Chrome:</strong></p>
+<div class="pre-wrapper"><button class="copy-btn">Copy</button>
+<pre>zip -r social-media-redirector-chrome.zip manifest.json background.js popup.html popup.js images/</pre></div>
+
+<p><strong>Firefox:</strong></p>
+<div class="pre-wrapper"><button class="copy-btn">Copy</button>
+<pre>cp manifest-firefox.json manifest.json && zip -r social-media-redirector-firefox.zip manifest.json background.js popup.html popup.js images/</pre></div>
+
+<p>Releases are automatically built by GitHub Actions.</p>
+
+<h2>Privacy</h2>
+<ul>
+  <li><a href="PRIVACY_POLICY">Privacy Policy</a></li>
+</ul>
+
+<h2>License</h2>
+<p>MIT</p>
+
+<script>
+document.querySelectorAll('.pre-wrapper').forEach(function(wrapper) {
+  var btn = wrapper.querySelector('.copy-btn');
+  var pre = wrapper.querySelector('pre');
+  btn.addEventListener('click', async function() {
+    try {
+      await navigator.clipboard.writeText(pre.textContent);
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch (e) {
+      btn.textContent = 'Failed';
+    }
+  });
+});
+</script>
+</body>
+</html>

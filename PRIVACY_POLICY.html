@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Privacy Policy - Social Media Redirector</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 2em 1em; line-height: 1.6; color: #c9d1d9; background: #0d1117; }
+a { color: #58a6ff; }
+code { background: #21262d; padding: .2em .4em; border-radius: 3px; }
+table { border-collapse: collapse; width: 100%; }
+td, th { border: 1px solid #30363d; padding: 6px 13px; text-align: left; }
+tr:nth-child(even) { background: #161b22; }
+</style>
+</head>
+<body>
+
+<h1>Privacy Policy for Social Media Redirector</h1>
+<p><strong>Last updated:</strong> July 26, 2026</p>
+
+<h2>Data Collection</h2>
+<p>Social Media Redirector <strong>does not collect, store, transmit, or share any personal data</strong>. The extension operates entirely locally within your browser.</p>
+
+<h2>Permissions Used</h2>
+<table>
+  <tr><th>Permission</th><th>Purpose</th></tr>
+  <tr><td><code>declarativeNetRequest</code> / <code>declarativeNetRequestWithHostAccess</code></td><td>Rewrite URLs locally via browser-built-in DNR rules — no network requests are intercepted or inspected by the extension.</td></tr>
+  <tr><td><code>storage</code></td><td>Save your toggle preference (on/off) locally. No data is synced or sent externally.</td></tr>
+  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>) and TikTok page navigation to preserve the original URL when toggling off.</td></tr>
+</table>
+
+<h2>What the Extension Does</h2>
+<ul>
+  <li>When enabled, it <strong>redirects your browser</strong> from supported social media domains to their privacy-respecting front-end alternatives.</li>
+  <li>All redirect logic runs <strong>inside your browser</strong> via <code>chrome.declarativeNetRequest</code> rules and a service worker.</li>
+  <li>The extension <strong>never sends your browsing data</strong>, URLs, or any other information to any remote server.</li>
+</ul>
+
+<h2>Third-Party Services</h2>
+<p>The extension redirects you to third-party front-ends:</p>
+<ul>
+  <li><strong>imginn.com</strong> (Instagram alternative)</li>
+  <li><strong>nitter.us.catsarch.com</strong> (X/Twitter alternative)</li>
+  <li><strong>exporttok.com</strong> (TikTok alternative)</li>
+  <li><strong>shoelace.mint.lgbt</strong> (Threads alternative)</li>
+</ul>
+<p>These services are operated independently. Please refer to their respective privacy policies for information on how they handle your data.</p>
+
+<h2>Changes to This Policy</h2>
+<p>If this policy changes, the "Last updated" date at the top will be revised.</p>
+
+<h2>Contact</h2>
+<p>Open an issue on <a href="https://github.com/karayelxyz/social-media-redirector/issues">GitHub</a> with any questions.</p>
+
+</body>
+</html>
