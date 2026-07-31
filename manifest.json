@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Social Media Redirector",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Redirects Instagram, X, TikTok, Threads to privacy front-ends (imginn, nitter, exporttok, shoelace).",
   "homepage_url": "https://karayelxyz.github.io/social-media-redirector",
   "permissions": [
