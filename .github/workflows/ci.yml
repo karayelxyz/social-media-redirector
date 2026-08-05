@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: |
+          node --check Extension/background.js
+          node --check Extension/content.js
+          node --check Extension/popup.js
+
+      - name: Validate manifests
+        run: |
+          jq empty Extension/manifest.json
+          jq empty Extension/manifest-firefox.json
+
+      - name: Versions in sync
+        run: |
+          [ "$(jq -r .version Extension/manifest.json)" = "$(jq -r .version Extension/manifest-firefox.json)" ]
+
+      - name: Redirect round-trip tests
+        run: node test/redirect.test.js
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Chrome package
+        run: |
+          mkdir -p dist-chrome
+          cp Extension/manifest.json Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js dist-chrome/
+          cp -r Extension/images dist-chrome/
+          cd dist-chrome && zip -r ../social-media-redirector-chrome.zip .
+
+      - name: Build Firefox package
+        run: |
+          mkdir -p dist-firefox
+          cp Extension/manifest-firefox.json dist-firefox/manifest.json
+          cp Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js dist-firefox/
+          cp -r Extension/images dist-firefox/
+          cd dist-firefox && zip -r ../social-media-redirector-firefox.zip .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: social-media-redirector-*.zip
+          retention-days: 7

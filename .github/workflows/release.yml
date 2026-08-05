@@ -9,8 +9,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'manifest.json'
-      - 'manifest-firefox.json'
+      - 'Extension/manifest.json'
+      - 'Extension/manifest-firefox.json'
 
 permissions:
   contents: write
@@ -37,7 +37,7 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            echo "version=$(jq -r '.version' manifest.json)" >> $GITHUB_OUTPUT
+            echo "version=$(jq -r '.version' Extension/manifest.json)" >> $GITHUB_OUTPUT
           fi
 
       - name: Tag already exists?
@@ -55,8 +55,8 @@ jobs:
           CRX_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
         run: |
           mkdir -p dist-chrome
-          cp manifest.json background.js popup.html popup.js dist-chrome/
-          cp -r images dist-chrome/
+          cp Extension/manifest.json Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js dist-chrome/
+          cp -r Extension/images dist-chrome/
           cd dist-chrome && zip -r ../social-media-redirector-chrome.zip . && cd ..
           if [ -n "$CRX_KEY" ]; then
             printf '%s' "$CRX_KEY" | base64 -d > key.bin 2>/dev/null || true
@@ -72,9 +72,9 @@ jobs:
         if: steps.tag_check.outputs.exists == 'false'
         run: |
           mkdir -p dist-firefox
-          cp manifest-firefox.json dist-firefox/manifest.json
-          cp background.js popup.html popup.js dist-firefox/
-          cp -r images dist-firefox/
+          cp Extension/manifest-firefox.json dist-firefox/manifest.json
+          cp Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js dist-firefox/
+          cp -r Extension/images dist-firefox/
           cd dist-firefox && zip -r ../social-media-redirector-firefox.zip . && cd ..
 
       - name: Sign Firefox addon

@@ -1,4 +1,4 @@
-![Social Media Redirector Cover](assets/cover.png)
+﻿![Social Media Redirector Cover](assets/cover.png)
 
 # Social Media Redirector
 
@@ -10,7 +10,7 @@ A browser extension that redirects social media pages to privacy-respecting fron
 | Platform | Original | Redirect |
 |----------|----------|----------|
 | Instagram | instagram.com | imginn.com |
-| X | x.com | nitter.us.catsarch.com |
+| X | x.com | nitter.net (customizable via ⚙ in popup) |
 | TikTok | tiktok.com | exporttok.com |
 | Threads | threads.com | shoelace.mint.lgbt |
 
@@ -33,31 +33,31 @@ A browser extension that redirects social media pages to privacy-respecting fron
 3. Click the gear icon → **Install Add-on From File**
 4. Select the `.xpi` file
 
-## Bookmarklet (no extension required)
+## Bookmarklet
 
-Works on any browser (iOS Safari, Firefox, etc.). Create a new bookmark and paste the following as the URL:
+Works on any browser (Chromium or Gecko based). Create a new bookmark, paste the URL below, or visit the [landing page](https://karayelxyz.github.io/social-media-redirector) to select a different Nitter instance.
 
 ```
-javascript:(function(){var%20u=new%20URL(window.location.href),h=u.hostname,p=u.pathname,s=u.searchParams,m;if(h.indexOf(%27instagram.com%27)>=0){if(p.indexOf(%27/accounts/login%27)>=0){var%20n=s.get(%27next%27);if(n){var%20pt=n.indexOf(%27http%27)===0?new%20URL(n).pathname:n.split(%27?%27)[0];var%20al=[%27/explore%27,%27/direct%27,%27/accounts%27,%27/about%27,%27/hacked%27,%27/privacy%27,%27/popular%27];if(!al.some(function(x){return%20pt.indexOf(x)===0})){if(m=pt.match(/\/(?:p|reels?)\/([^/]+)/)){window.location.href=%27https://imginn.com/p/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/]+)\/reels?/)){window.location.href=%27https://imginn.com/reels/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/]+)\/tagged/)){window.location.href=%27https://imginn.com/tagged/%27+m[1]+%27/%27;return}if(m=pt.match(/\/stories\/([^/]+)/)){window.location.href=%27https://imginn.com/stories/%27+m[1]+%27/%27;return}if(m=pt.match(/\/([^/?#]+)/)){window.location.href=%27https://imginn.com/%27+m[1]+%27/%27;return}}}return}var%20a=[%27/explore%27,%27/direct%27,%27/accounts%27,%27/about%27,%27/hacked%27,%27/privacy%27,%27/popular%27];if(a.some(function(x){return%20p.indexOf(x)===0}))return;if(m=p.match(/\/(?:p|reels?)\/([^/]+)/)){window.location.href=%27https://imginn.com/p/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/]+)\/reels?/)){window.location.href=%27https://imginn.com/reels/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/]+)\/tagged/)){window.location.href=%27https://imginn.com/tagged/%27+m[1]+%27/%27}else%20if(m=p.match(/\/stories\/([^/]+)/)){window.location.href=%27https://imginn.com/stories/%27+m[1]+%27/%27}else%20if(m=p.match(/\/([^/?#]+)/)){window.location.href=%27https://imginn.com/%27+m[1]+%27/%27}}else%20if(h.indexOf(%27x.com%27)>=0){if(p.indexOf(%27/i/jf/onboarding%27)>=0||p.indexOf(%27/i/flow%27)>=0){var%20r=s.get(%27redirect_after_login%27);if(r){var%20d=decodeURIComponent(r);var%20ht=d.match(/^\/hashtag\/([^?#]+)/);if(ht){window.location.href=%27https://nitter.us.catsarch.com/search?f=tweets&q=%2523%27+encodeURIComponent(ht[1].split(%27?%27)[0].split(%27#%27)[0])+%27%27;return}window.location.href=%27https://nitter.us.catsarch.com%27+d;return}}return}window.location.href=%27https://nitter.us.catsarch.com%27+p}if(h.indexOf(%27tiktok.com%27)>=0){if(m=p.match(/^\/(@[^/]+)\/(?:video|photo)\/(\d+)/)){window.location.href=%27https://exporttok.com/tiktok/account/viewer/%27+m[1]+%27/%27+m[2]}else%20if(m=p.match(/^\/(@[^/]+)/)){window.location.href=%27https://exporttok.com/tiktok/account/%27+m[1]}}if(h.indexOf(%27threads.com%27)>=0){var%20ta=[%27/login%27,%27/search%27,%27/explore%27,%27/activity%27,%27/settings%27,%27/api%27,%27/share%27];if(ta.some(function(x){return%20p.indexOf(x)===0}))return;if(m=p.match(/^\/@[^/]+\/post\/([^/]+)/)){window.location.href=%27https://shoelace.mint.lgbt/t/%27+m[1]}else%20if(m=p.match(/^\/(@[^/?#]+)/)){window.location.href=%27https://shoelace.mint.lgbt/%27+m[1]}}})();
+javascript:(function()%7Bvar%20u%3Dnew%20URL(window.location.href)%2Ch%3Du.hostname%2Cp%3Du.pathname%2Cs%3Du.searchParams%2Cm%3Bif(h.indexOf('instagram.com')%3E%3D0)%7Bif(p.indexOf('%2Faccounts%2Flogin')%3E%3D0)%7Bvar%20n%3Ds.get('next')%3Bif(n)%7Bvar%20pt%3Dn.indexOf('http')%3D%3D%3D0%3Fnew%20URL(n).pathname%3An.split('%3F')%5B0%5D%3Bvar%20al%3D%5B'%2Fexplore'%2C'%2Fdirect'%2C'%2Faccounts'%2C'%2Fabout'%2C'%2Fhacked'%2C'%2Fprivacy'%2C'%2Fpopular'%5D%3Bif(!al.some(function(x)%7Breturn%20pt.indexOf(x)%3D%3D%3D0%7D))%7Bif(m%3Dpt.match(%2F%2F(%3F%3Ap%7Creels%3F)%2F(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Fp%2F'%2Bm%5B1%5D%2B'%2F'%3Breturn%7Dif(m%3Dpt.match(%2F%2F(%5B%5E%2F%5D%2B)%2Freels%3F%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Freels%2F'%2Bm%5B1%5D%2B'%2F'%3Breturn%7Dif(m%3Dpt.match(%2F%2F(%5B%5E%2F%5D%2B)%2Ftagged%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Ftagged%2F'%2Bm%5B1%5D%2B'%2F'%3Breturn%7Dif(m%3Dpt.match(%2F%2Fstories%2F(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Fstories%2F'%2Bm%5B1%5D%2B'%2F'%3Breturn%7Dif(m%3Dpt.match(%2F%2F(%5B%5E%2F%3F%2523%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2F'%2Bm%5B1%5D%2B'%2F'%3Breturn%7D%7D%7Dreturn%7Dvar%20a%3D%5B'%2Fexplore'%2C'%2Fdirect'%2C'%2Faccounts'%2C'%2Fabout'%2C'%2Fhacked'%2C'%2Fprivacy'%2C'%2Fpopular'%5D%3Bif(a.some(function(x)%7Breturn%20p.indexOf(x)%3D%3D%3D0%7D))return%3Bif(p%3D%3D%3D'%2F'%7C%7Cp%3D%3D%3D'')%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2F'%3Breturn%3B%7Dif(m%3Dp.match(%2F%2F(%3F%3Ap%7Creels%3F)%2F(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Fp%2F'%2Bm%5B1%5D%2B'%2F'%7Delse%20if(m%3Dp.match(%2F%2F(%5B%5E%2F%5D%2B)%2Freels%3F%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Freels%2F'%2Bm%5B1%5D%2B'%2F'%7Delse%20if(m%3Dp.match(%2F%2F(%5B%5E%2F%5D%2B)%2Ftagged%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Ftagged%2F'%2Bm%5B1%5D%2B'%2F'%7Delse%20if(m%3Dp.match(%2F%2Fstories%2F(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2Fstories%2F'%2Bm%5B1%5D%2B'%2F'%7Delse%20if(m%3Dp.match(%2F%2F(%5B%5E%2F%3F%2523%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fimginn.com%2F'%2Bm%5B1%5D%2B'%2F'%3B%7D%7Delse%20if(h.indexOf('x.com')%3E%3D0)%7Bif(p.indexOf('%2Fi%2Fjf%2Fonboarding')%3E%3D0%7C%7Cp.indexOf('%2Fi%2Fflow')%3E%3D0)%7Bvar%20r%3Ds.get('redirect_after_login')%3Bif(r)%7Bvar%20d%3DdecodeURIComponent(r)%2Cht%3Dd.match(%2F%5E%2Fhashtag%2F(%5B%5E%2F%3F%23%5D%2B)%2F)%3Bif(ht)%7Bwindow.location.href%3D'https%3A%2F%2Fnitter.net%2Fsearch%3Fq%3D%2523'%2BencodeURIComponent(ht%5B1%5D)%3Breturn%7Dvar%20t%3D'https%3A%2F%2Fx.com'%2Bd%3Bm%3Dt.match(%2F%2Fhashtag%2F(%5B%5E%2F%3F%23%5D%2B)%2F)%3Bif(m)%7Bwindow.location.href%3D'https%3A%2F%2Fnitter.net%2Fsearch%3Ff%3Dtweets%26q%3D%2523'%2BencodeURIComponent(m%5B1%5D)%3Breturn%7Dm%3Dt.match(%2F(%2F.*)%2F)%3Bif(m)%7Bwindow.location.href%3D'https%3A%2F%2Fnitter.net'%2Bm%5B1%5D%3Breturn%7Dreturn%7Dreturn%7Dif(m%3Dp.match(%2F%2Fhashtag%2F(%5B%5E%2F%3F%23%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fnitter.net%2Fsearch%3Ff%3Dtweets%26q%3D%2523'%2BencodeURIComponent(m%5B1%5D)%7Delse%7Bwindow.location.href%3D'https%3A%2F%2Fnitter.net'%2Bp%2Bs%7D%7Delse%20if(h.indexOf('tiktok.com')%3E%3D0)%7Bif(m%3Dp.match(%2F%2F%40(%5B%5E%2F%5D%2B)%2F(%3F%3Avideo%7Cphoto)%2F(%5B0-9%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fexporttok.com%2Ftiktok%2Faccount%2Fviewer%2F%40'%2Bm%5B1%5D%2B'%2F'%2Bm%5B2%5D%7Delse%20if(m%3Dp.match(%2F%2F%40(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fexporttok.com%2Ftiktok%2Faccount%2F'%2Bm%5B1%5D%7D%7Delse%20if(h.indexOf('threads.com')%3E%3D0)%7Bif(m%3Dp.match(%2F%2F%40%5B%5E%2F%5D%2B%2Fpost%2F(%5B%5E%2F%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fshoelace.mint.lgbt%2Ft%2F'%2Bm%5B1%5D%7Delse%20if(m%3Dp.match(%2F%2F%40(%5B%5E%2F%3F%23%5D%2B)%2F))%7Bwindow.location.href%3D'https%3A%2F%2Fshoelace.mint.lgbt%2F%40'%2Bm%5B1%5D%7D%7D%7D)()
 ```
 
-Click the bookmark on any supported page to instantly redirect.
+Click the bookmark on any supported page to instantly redirect. To use a different Nitter instance, visit the [landing page](https://karayelxyz.github.io/social-media-redirector) to generate a custom bookmarklet.
 
 ## Build from Source
 
 ```bash
 # Chrome
-zip -r social-media-redirector-chrome.zip manifest.json background.js popup.html popup.js images/
+zip -r social-media-redirector-chrome.zip Extension/manifest.json Extension/background.js Extension/popup.html Extension/popup.js Extension/images/
 
 # Firefox
-cp manifest-firefox.json manifest.json && zip -r social-media-redirector-firefox.zip manifest.json background.js popup.html popup.js images/
+cp Extension/manifest-firefox.json Extension/manifest.json && zip -r social-media-redirector-firefox.zip Extension/manifest.json Extension/background.js Extension/popup.html Extension/popup.js Extension/images/
 ```
 
 Releases are automatically built by GitHub Actions — see [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 ## Privacy
 
-- [Privacy Policy](PRIVACY_POLICY.md)
+- [Privacy Policy](PRIVACY_POLICY.html)
 
 ## License
 
