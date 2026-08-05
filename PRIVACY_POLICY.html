@@ -17,7 +17,7 @@ tr:nth-child(even) { background: #161b22; }
 <body>
 
 <h1>Privacy Policy for Social Media Redirector</h1>
-<p><strong>Last updated:</strong> July 26, 2026</p>
+<p><strong>Last updated:</strong> August 5, 2026</p>
 
 <h2>Data Collection</h2>
 <p>Social Media Redirector <strong>does not collect, store, transmit, or share any personal data</strong>. The extension operates entirely locally within your browser.</p>
@@ -27,7 +27,8 @@ tr:nth-child(even) { background: #161b22; }
   <tr><th>Permission</th><th>Purpose</th></tr>
   <tr><td><code>declarativeNetRequest</code> / <code>declarativeNetRequestWithHostAccess</code></td><td>Rewrite URLs locally via browser-built-in DNR rules — no network requests are intercepted or inspected by the extension.</td></tr>
   <tr><td><code>storage</code></td><td>Save your toggle preference (on/off) locally. No data is synced or sent externally.</td></tr>
-  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>) and TikTok page navigation to preserve the original URL when toggling off.</td></tr>
+  <tr><td><code>tabs</code></td><td>Read active tab URL and perform programmatic navigation (<code>tabs.update</code>, <code>tabs.reload</code>) when toggling redirects on/off.</td></tr>
+  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>) and Nitter-to-X reverse navigation when the toggle is off.</td></tr>
 </table>
 
 <h2>What the Extension Does</h2>
@@ -41,7 +42,7 @@ tr:nth-child(even) { background: #161b22; }
 <p>The extension redirects you to third-party front-ends:</p>
 <ul>
   <li><strong>imginn.com</strong> (Instagram alternative)</li>
-  <li><strong>nitter.us.catsarch.com</strong> (X/Twitter alternative)</li>
+  <li><strong>nitter.net</strong> (X/Twitter alternative)</li>
   <li><strong>exporttok.com</strong> (TikTok alternative)</li>
   <li><strong>shoelace.mint.lgbt</strong> (Threads alternative)</li>
 </ul>
