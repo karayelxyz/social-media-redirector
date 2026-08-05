@@ -18,6 +18,7 @@ A browser extension that redirects social media pages to privacy-respecting fron
 
 [<img src="assets/chrome.png" alt="Chrome Web Store" height="60">](https://chromewebstore.google.com/detail/social-media-redirector/gckenkjdlidnignifbbobohimoilmgcg)
 [<img src="assets/firefox.png" alt="Firefox Add-ons" height="60">](https://addons.mozilla.org/en-US/firefox/addon/social-media-redirector/)
+[<img src="assets/edge.png" alt="Edge Add-ons" height="60">](https://microsoftedge.microsoft.com/addons/detail/social-media-redirector/ahioadaknnlfbkdhmebmkhnjllglcffj)
 
 ### Manual (developer mode)
 
