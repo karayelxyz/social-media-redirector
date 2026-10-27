@@ -116,7 +116,9 @@ function createSettingsPanel(platform) {
     }
     err.textContent = '';
     save.disabled = true;
-    save.textContent = 'Saving…';
+    save.textContent = '…';
+    save.setAttribute('aria-label', 'Saving');
+    save.title = 'Saving…';
 
     await saveInstance(platform, domain);
 
@@ -126,17 +128,24 @@ function createSettingsPanel(platform) {
     if (stored !== domain) {
       err.textContent = 'Save failed, try again. ';
       save.textContent = 'Save';
+      save.setAttribute('aria-label', 'Save');
+      save.title = '';
       save.disabled = false;
       return;
     }
 
     instances[platform] = domain;
-    save.textContent = 'Saved ✓';
+    // Only a tick: "Saved ✓" is wider than "Save" and overflowed the panel.
+    save.textContent = '✓';
+    save.setAttribute('aria-label', 'Saved');
+    save.title = 'Saved';
     save.classList.add('saved');
     setTimeout(() => {
       panel.classList.remove('open');
       save.classList.remove('saved');
       save.textContent = 'Save';
+      save.setAttribute('aria-label', 'Save');
+      save.title = '';
       save.disabled = false;
     }, 900);
   });

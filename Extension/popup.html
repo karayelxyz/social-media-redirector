@@ -94,6 +94,8 @@
       background: var(--on); border: none; color: #fff;
       border-radius: 6px; padding: 6px 12px; font-size: 12px;
       cursor: pointer; font-weight: 500; white-space: nowrap;
+      /* fixed box so the label can become "…" or "✓" without resizing */
+      min-width: 58px; text-align: center;
     }
     .inst-save:hover { opacity: 0.85; }
     .inst-hint {
@@ -111,6 +113,7 @@
     .inst-hint .inst-err { color: #f85149; font-weight: 500; }
     .inst-save[disabled] { opacity: 0.8; cursor: default; }
     .inst-save.saved { background: #2ea043; }
+    .inst-save.saved[disabled] { opacity: 1; }
     @media (pointer: coarse) {
       body {
         width: 100vw;
