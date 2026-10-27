@@ -52,10 +52,24 @@
   .store-buttons { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 24px 0 14px; }
   .store-buttons img { height: 52px; width: auto; }
   .store-buttons a:hover { opacity: .88; }
-  .hero-art img {
-    border-radius: 16px; border: 1px solid var(--line);
-    background: var(--panel); box-shadow: 0 24px 60px -30px rgba(0,0,0,.9);
+  /* hero: popup slider */
+  .slider { width: 100%; max-width: 336px; margin: 0 auto; }
+  .frame { position: relative; aspect-ratio: 640 / 884; }
+  .slide {
+    position: absolute; inset: 0; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--panel);
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,.9);
+    opacity: 0; transition: opacity .45s ease;
   }
+  .slide.active { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: contain; }
+  .dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+  .dot {
+    width: 22px; height: 5px; padding: 0; cursor: pointer; border: 0; border-radius: 999px;
+    background: var(--line-strong); transition: background .2s ease, width .2s ease;
+  }
+  .dot:hover { background: var(--muted); }
+  .dot.active { width: 30px; background: var(--accent); }
 
   /* sections */
   section { margin-top: 52px; }
@@ -193,7 +207,7 @@
 
   @media (min-width: 860px) {
     .hero { grid-template-columns: 1.05fr .95fr; align-items: center; }
-    .hero-art img { max-height: 330px; object-fit: contain; width: 100%; }
+    .slider { max-width: 360px; }
   }
   @media (max-width: 640px) {
     .wrap { padding: 28px 16px 56px; }
@@ -233,7 +247,18 @@
       </div>
     </div>
     <div class="hero-art">
-      <img src="assets/cover.png" alt="Social Media Redirector">
+      <div class="slider" id="popup-slider">
+        <div class="frame">
+          <div class="slide active"><img src="assets/popup-instagram.png" alt="Extension popup with the Instagram instance panel open"></div>
+          <div class="slide"><img src="assets/popup-x.png" alt="Extension popup with the X instance panel open"></div>
+          <div class="slide"><img src="assets/popup-tiktok.png" alt="Extension popup with the TikTok front-end buttons" loading="lazy"></div>
+        </div>
+        <div class="dots">
+          <button class="dot active" type="button" aria-label="Show the Instagram panel"></button>
+          <button class="dot" type="button" aria-label="Show the X panel"></button>
+          <button class="dot" type="button" aria-label="Show the TikTok panel"></button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -431,6 +456,42 @@ fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
     count.classList.add('on');
   })
   .catch(function() {});
+
+// Popup preview: three static shots of the same popup, one per front-end panel.
+(function() {
+  var slider = document.getElementById('popup-slider');
+  if (!slider) return;
+  var slides = Array.prototype.slice.call(slider.querySelectorAll('.slide'));
+  var dots = Array.prototype.slice.call(slider.querySelectorAll('.dot'));
+  var current = 0;
+  var timer = 0;
+
+  function show(next) {
+    current = (next + slides.length) % slides.length;
+    slides.forEach(function(slide, i) { slide.classList.toggle('active', i === current); });
+    dots.forEach(function(dot, i) {
+      dot.classList.toggle('active', i === current);
+      dot.setAttribute('aria-current', i === current ? 'true' : 'false');
+    });
+  }
+
+  function stop() { clearInterval(timer); timer = 0; }
+
+  function start() {
+    stop();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(function() { show(current + 1); }, 4200);
+  }
+
+  dots.forEach(function(dot, i) {
+    dot.addEventListener('click', function() { show(i); start(); });
+  });
+  slider.addEventListener('mouseenter', stop);
+  slider.addEventListener('mouseleave', start);
+  slider.addEventListener('focusin', stop);
+  slider.addEventListener('focusout', start);
+  start();
+})();
 </script>
 </body>
 </html>
