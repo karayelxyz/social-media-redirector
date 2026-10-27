@@ -8,7 +8,7 @@ No build step or dependencies — the extension is plain JavaScript.
 
 **Firefox desktop:** open `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → select `Extension/manifest-firefox.json` (rename/copy to `Extension/manifest.json` in a temp folder, or use `web-ext`).
 
-**Firefox Android:** `npx web-ext run -s <source-dir> -t firefox-android --adb-device <id> --firefox-apk org.mozilla.fenix`
+**Firefox Android:** `npx web-ext run -s <source-dir> -t firefox-android --adb-device <id> --firefox-apk org.mozilla.firefox` (copy `Extension/*` to a staging folder first and name the Firefox manifest `manifest.json`). Keep the phone awake — `adb shell svc power stayon usb` — otherwise the debugging link drops and the temporary add-on disappears with it. The add-on is always temporary: it goes away when Firefox restarts.
 
 ## Coding Conventions
 
