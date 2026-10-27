@@ -28,7 +28,7 @@ tr:nth-child(even) { background: #161b22; }
   <tr><td><code>declarativeNetRequest</code> / <code>declarativeNetRequestWithHostAccess</code></td><td>Rewrite URLs locally via browser-built-in DNR rules — no network requests are intercepted or inspected by the extension.</td></tr>
   <tr><td><code>storage</code></td><td>Save your toggle preference (on/off) locally. No data is synced or sent externally.</td></tr>
   <tr><td><code>tabs</code></td><td>Read active tab URL and perform programmatic navigation (<code>tabs.update</code>, <code>tabs.reload</code>) when toggling redirects on/off.</td></tr>
-  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>) and remember which tab is on a supported site, so turning a toggle on can redirect that tab.</td></tr>
+  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>), notice when a supported page moves to another URL inside the same tab (so it can be redirected immediately instead of a second later), and remember which tab is on a supported site so turning a toggle on can redirect that tab.</td></tr>
 </table>
 
 <h2>What the Extension Does</h2>

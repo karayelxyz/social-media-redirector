@@ -247,11 +247,10 @@ W.runtime.onMessage.addListener((msg, sender) => {
   forwardSpaNav(sender.tab.id, msg.url);
 });
 
-// A site can move to another URL with history.pushState: no request, so DNR
-// never sees it. webNavigation reports it the moment it happens; the content
-// script's poll (every second) is only the fallback for browsers that stay
-// quiet about it.
-async function forwardSpaNav(tabId, url) {
+// A supported page that DNR did not get to redirect (a same-document
+// pushState, or a navigation served from the site's own service worker) is
+// still on screen. Send it on its way as soon as we hear about it.
+async function forwardSpaNav(tabId, url, direct) {
   const host = hostOf(url);
   if (!host) return;
   const platform = Object.keys(DOMAINS).find(p => DOMAINS[p].originals.some(h => hostMatches(host, h)));
@@ -260,6 +259,13 @@ async function forwardSpaNav(tabId, url) {
   if (t[STORAGE_KEYS[platform]] === false) return;
   const dest = forwardUrl(url);
   if (!dest || dest === url) return;
+  // A freshly committed document may not have the content script yet, so for
+  // that case navigate the tab directly: no 600 ms round trip, and the page
+  // that is still parsing is dropped.
+  if (direct) {
+    W.tabs.update(tabId, { url: dest }).catch(() => {});
+    return;
+  }
   sendMsg(tabId, { type: 'smr-nav', url: dest }, 600).then(
     () => {},
     () => W.tabs.update(tabId, { url: dest }).catch(() => {})
@@ -380,6 +386,10 @@ W.webNavigation.onCommitted.addListener((details) => {
       break;
     }
   }
+  // DNR normally redirects before anything renders; if a supported URL did
+  // commit, the request slipped past it — go now, not on the next poll.
+  forwardSpaNav(details.tabId, url, true);
+
   checkLoginRedirect(url, host).then(result => {
     if (!result) return;
     sendMsg(details.tabId, { type: 'smr-nav', url: result.dest }, 600).then(
