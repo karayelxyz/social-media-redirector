@@ -241,23 +241,30 @@ W.runtime.onMessage.addListener((msg, sender) => {
     W.storage.local.set({ [msg.key]: msg.value !== false }).catch(() => {});
     return;
   }
-  // SPA URL change reported by the content script.
+  // SPA URL change reported by the content-script poll (fallback path).
   if (msg.type !== 'smr-url' || !msg.url) return;
   if (!sender.tab || typeof sender.tab.id !== 'number') return;
-  const host = hostOf(msg.url);
+  forwardSpaNav(sender.tab.id, msg.url);
+});
+
+// A site can move to another URL with history.pushState: no request, so DNR
+// never sees it. webNavigation reports it the moment it happens; the content
+// script's poll (every second) is only the fallback for browsers that stay
+// quiet about it.
+async function forwardSpaNav(tabId, url) {
+  const host = hostOf(url);
   if (!host) return;
   const platform = Object.keys(DOMAINS).find(p => DOMAINS[p].originals.some(h => hostMatches(host, h)));
   if (!platform) return;
-  W.storage.local.get(STORAGE_KEYS[platform]).then(t => {
-    if (t[STORAGE_KEYS[platform]] === false) return;
-    const dest = forwardUrl(msg.url);
-    if (!dest || dest === msg.url) return;
-    sendMsg(sender.tab.id, { type: 'smr-nav', url: dest }, 600).then(
-      () => {},
-      () => W.tabs.update(sender.tab.id, { url: dest }).catch(() => {})
-    );
-  });
-});
+  const t = await W.storage.local.get(STORAGE_KEYS[platform]).catch(() => ({}));
+  if (t[STORAGE_KEYS[platform]] === false) return;
+  const dest = forwardUrl(url);
+  if (!dest || dest === url) return;
+  sendMsg(tabId, { type: 'smr-nav', url: dest }, 600).then(
+    () => {},
+    () => W.tabs.update(tabId, { url: dest }).catch(() => {})
+  );
+}
 
 function forwardUrl(url) {
   let u;
@@ -338,6 +345,17 @@ async function getLastTabs() {
     lastTabs = (s && s.lastTabs) || {};
   }
   return lastTabs;
+}
+
+// Same-document navigation (history.pushState): fires immediately, unlike the
+// one-second poll. Without this a TikTok page shows for a couple of seconds
+// before the front-end takes over.
+if (W.webNavigation.onHistoryStateUpdated) {
+  W.webNavigation.onHistoryStateUpdated.addListener((details) => {
+    if (details.frameId !== 0) return;
+    if (!details.url || !details.url.startsWith('http')) return;
+    forwardSpaNav(details.tabId, details.url);
+  });
 }
 
 W.webNavigation.onCommitted.addListener((details) => {
