@@ -73,6 +73,13 @@ function createSettingsPanel(platform) {
   input.className = 'inst-input';
   input.type = 'text';
   input.placeholder = info.placeholder;
+  input.enterKeyHint = 'go';
+  // On touch screens the soft keyboard covers the lower half of the popup and
+  // nothing can move the browser's own popup, so the editing panel is placed at
+  // the top (see gear handler) and the field is scrolled into view on focus.
+  input.addEventListener('focus', () => {
+    setTimeout(() => input.scrollIntoView({ block: 'nearest' }), 250);
+  });
   const save = document.createElement('button');
   save.className = 'inst-save';
   save.textContent = 'Save';
@@ -179,7 +186,9 @@ async function render() {
         if (!settingsPanel || settingsPanel.dataset.platform !== s.platform) {
           if (settingsPanel) settingsPanel.remove();
           settingsPanel = createSettingsPanel(s.platform);
-          list.insertBefore(settingsPanel, row.nextSibling);
+          // Touch: top of the list, so the on-screen keyboard cannot cover it.
+          if (matchMedia('(pointer: coarse)').matches) list.prepend(settingsPanel);
+          else list.insertBefore(settingsPanel, row.nextSibling);
         }
         if (settingsPanel.classList.contains('open')) {
           settingsPanel.classList.remove('open');
