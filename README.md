@@ -17,7 +17,7 @@
 You open a link from Instagram, X, TikTok or Threads. Instead of a login wall, the page arrives from a
 front-end that serves the same post, profile or video without an account — only the hostname changes.
 
-<p align="center"><img src="store-assets/screenshot-1-redirect.png" width="800" alt="An x.com link opening on a Nitter front-end"></p>
+<p align="center"><img src="assets/store/screenshot-1-redirect.png" width="800" alt="An x.com link opening on a Nitter front-end"></p>
 
 One switch per platform. Off means the site opens untouched: nothing is rewritten, nothing is sent
 anywhere.
@@ -34,7 +34,7 @@ anywhere.
 Pick your own under the ⚙ next to each switch. TikTok's three front-ends disagree about URLs, so videos
 and profiles are mapped per front-end instead of by a plain host swap.
 
-<p align="center"><img src="store-assets/screenshot-3-instances.png" width="720" alt="The instance panels for X, Instagram and TikTok inside the popup"></p>
+<p align="center"><img src="assets/store/screenshot-3-instances.png" width="720" alt="The instance panels for X, Instagram and TikTok inside the popup"></p>
 
 ## Install
 
@@ -89,7 +89,7 @@ javascript:(function()%7Bvar%20K%3D%22https%3A%2F%2Fkittygram.irelephant.net%22%
 ```
 Extension/     the add-on — background.js (rules, navigation), content.js, popup, icons
 test/          redirect and bookmarklet tests
-store-assets/  listing images for the three stores
+assets/        site images, README banner, store listing images (assets/store/)
 index.html     landing page and the bookmarklet generator
 ```
 
