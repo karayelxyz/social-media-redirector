@@ -5,10 +5,11 @@ const defs = src.match(/const DEFAULT_INSTANCES = \{[\s\S]*?\n\};/)[0];
 const dm = src.match(/const DOMAINS = \{[\s\S]*?\n\};/)[0];
 const hh = src.match(/function hostOf[\s\S]*?\n\}/)[0] + '\n' + src.match(/function hostMatches[\s\S]*?\n\}/)[0];
 const fr = src.match(/function forwardRules\(\) \{[\s\S]*?\n\}/)[0];
+const tk = src.match(/function tiktokRules\(host\) \{[\s\S]*?\n\}/)[0];
 const ff = src.match(/function forwardUrl\(url\) \{[\s\S]*?\n\}/)[0];
 eval('const ALLOW = true;\n' + defs + '\n' +
   'const instances = { ...DEFAULT_INSTANCES };\n' +
-  dm + '\n' + hh + '\n' + fr + '\n' + ff + '\n' +
+  dm + '\n' + hh + '\n' + tk + '\n' + fr + '\n' + ff + '\n' +
   'function setInst(platform, domain) { instances[platform] = domain; }');
 
 const K = 'https://kittygram.irelephant.net';
@@ -52,6 +53,25 @@ setInst('instagram', 'kg.meowing.de');
 check('https://www.instagram.com/u', 'https://kg.meowing.de/u');
 setInst('x', 'nitter.tiekoetter.com');
 check('https://x.com/u', 'https://nitter.tiekoetter.com/u');
+
+// TikTok front-ends disagree on paths: each scheme maps its own pages, and an
+// unknown host must keep the exporttok scheme.
+setInst('tiktok', 'www.tikvib.com');
+check('https://www.tiktok.com/@u/video/123', 'https://www.tikvib.com/media/123');
+check('https://www.tiktok.com/@u', 'https://www.tikvib.com/profile/u');
+check('https://www.tiktok.com/@u/followers', 'https://www.tikvib.com/followers/u');
+check('https://www.tiktok.com/@u/repost?lang=en', 'https://www.tikvib.com/reposts/u');
+
+setInst('tiktok', 'viewtikstories.com');
+check('https://www.tiktok.com/@u/video/123', 'https://viewtikstories.com/comments/123');
+check('https://www.tiktok.com/@u', 'https://viewtikstories.com/profile/u');
+check('https://www.tiktok.com/@u/repost', 'https://viewtikstories.com/profile/u?tab=reposts');
+check('https://www.tiktok.com/@u/following', 'https://viewtikstories.com/profile/u?tab=following');
+check('https://www.tiktok.com/@u/playlist/x', 'https://viewtikstories.com/profile/u?tab=playlist');
+
+setInst('tiktok', 'some-other-mirror.example');
+check('https://www.tiktok.com/@u/video/123', 'https://some-other-mirror.example/tiktok/account/viewer/@u/123');
+setInst('tiktok', 'exporttok.com');
 
 // Reverse was removed on request: nothing must bring it back.
 for (const gone of ['reverseDnrRules', 'reverseUrl', 'onBeforeNavigate']) {

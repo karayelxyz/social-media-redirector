@@ -10,11 +10,16 @@ const STORAGE_KEYS = {
 const DEFAULT_INSTANCES = {
   x:         'shitter.thepixora.com',
   instagram: 'kittygram.irelephant.net',
+  tiktok:    'exporttok.com',
 };
 
 // Instance host per platform, mirrored from storage so DNR rules and URL
 // building always agree with what the popup saved.
-const INSTANCE_KEYS = { x: 'nitter_instance', instagram: 'kittygram_instance' };
+const INSTANCE_KEYS = {
+  x: 'nitter_instance',
+  instagram: 'kittygram_instance',
+  tiktok: 'tiktok_instance',
+};
 const instances = { ...DEFAULT_INSTANCES };
 
 const DOMAINS = {
@@ -56,6 +61,42 @@ function hostMatches(host, domain) {
 
 // Forward rules: original -> frontend. Instagram and X targets follow the
 // instance saved in the popup, so they are built per call.
+// TikTok front-ends disagree on their paths, so each known host brings its own
+// mapping: exporttok uses /tiktok/account/..., tikvib /profile/... and
+// viewtikstories /profile/<user>?tab=.... Unknown hosts fall back to
+// exporttok's scheme. Stories and highlights have no tiktok.com URL to map.
+function tiktokRules(host) {
+  const h = host.replace(/^www\./, '');
+  const base = `https://${host}`;
+  const src = '^https://(?:[\\w-]+\\.)?tiktok\\.com';
+  const post = `${src}/@([^/]+)/(?:video|photo)/([0-9]+)(?:[/?#].*)?$`;
+  const tail = `${src}/@([^/]+)(?:[/?#].*)?$`;
+
+  if (h === 'tikvib.com') {
+    return [
+      { priority: 12, from: post, to: `${base}/media/\\2` },
+      { priority: 11, from: `${src}/@([^/]+)/followers(?:[/?#].*)?$`, to: `${base}/followers/\\1` },
+      { priority: 11, from: `${src}/@([^/]+)/following(?:[/?#].*)?$`, to: `${base}/following/\\1` },
+      { priority: 11, from: `${src}/@([^/]+)/reposts?(?:[/?#].*)?$`, to: `${base}/reposts/\\1` },
+      { priority: 9,  from: tail, to: `${base}/profile/\\1` },
+    ];
+  }
+  if (h === 'viewtikstories.com') {
+    return [
+      { priority: 12, from: post, to: `${base}/comments/\\2` },
+      { priority: 11, from: `${src}/@([^/]+)/followers(?:[/?#].*)?$`, to: `${base}/profile/\\1?tab=followers` },
+      { priority: 11, from: `${src}/@([^/]+)/following(?:[/?#].*)?$`, to: `${base}/profile/\\1?tab=following` },
+      { priority: 11, from: `${src}/@([^/]+)/reposts?(?:[/?#].*)?$`, to: `${base}/profile/\\1?tab=reposts` },
+      { priority: 11, from: `${src}/@([^/]+)/playlist(?:[/?#].*)?$`, to: `${base}/profile/\\1?tab=playlist` },
+      { priority: 9,  from: tail, to: `${base}/profile/\\1` },
+    ];
+  }
+  return [
+    { priority: 10, from: post, to: `${base}/tiktok/account/viewer/@\\1/\\2` },
+    { priority: 9,  from: tail, to: `${base}/tiktok/account/\\1` },
+  ];
+}
+
 function forwardRules() {
   return [
     { platforms: ['instagram'], priority: 10, allow: true,
@@ -73,12 +114,7 @@ function forwardRules() {
       from: '^https://(?:www\\.)?x\\.com(?:/(.*))?$',
       to:   `https://${instances.x}/\\1` },
 
-    { platforms: ['tiktok'], priority: 10,
-      from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)/(?:video|photo)/([0-9]+)(?:[/?#].*)?$',
-      to:   'https://exporttok.com/tiktok/account/viewer/@\\1/\\2' },
-    { platforms: ['tiktok'], priority: 9,
-      from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)(?:/.*)?$',
-      to:   'https://exporttok.com/tiktok/account/\\1' },
+    ...tiktokRules(instances.tiktok).map(r => ({ platforms: ['tiktok'], ...r })),
 
     { platforms: ['threads'], priority: 10,
       from: '^https://(?:www\\.)?threads\\.com/@[^/]+/post/([^/]+)(?:/.*)?$',

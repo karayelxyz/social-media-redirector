@@ -23,6 +23,13 @@ const INSTANCE_INFO = {
       ['official repository', 'https://codeberg.org/irelephant/kittygram#instances'],
     ],
   },
+  tiktok: {
+    placeholder: 'exporttok.com',
+    links: [
+      ['tikvib', 'https://www.tikvib.com'],
+      ['viewtikstories', 'https://viewtikstories.com'],
+    ],
+  },
 };
 
 const INSTANCE_KEYS = { x: 'nitter_instance', instagram: 'kittygram_instance' };

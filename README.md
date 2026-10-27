@@ -1,4 +1,4 @@
-﻿![Social Media Redirector Cover](assets/cover.png)
+![Social Media Redirector Cover](assets/cover.png)
 
 # Social Media Redirector
 
@@ -11,7 +11,7 @@ A browser extension that redirects social media pages to privacy-respecting fron
 |----------|----------|----------|
 | Instagram | instagram.com | kittygram.irelephant.net (customizable via ⚙ in popup) |
 | X | x.com | shitter.thepixora.com (customizable via ⚙ in popup) |
-| TikTok | tiktok.com | exporttok.com |
+| TikTok | tiktok.com | exporttok.com (customizable via ⚙ in popup) |
 | Threads | threads.com | shoelace.mint.lgbt |
 
 ## Installation
