@@ -24,6 +24,10 @@ tr:nth-child(even) { background: #161b22; }
 .pre-wrapper { position: relative; }
 .copy-btn { position: absolute; top: 8px; right: 8px; background: #30363d; color: #c9d1d9; border: 1px solid #484f58; border-radius: 4px; padding: 2px 8px; font-size: .8em; cursor: pointer; z-index: 1; }
 .copy-btn.copied { border-color: #3fb950; color: #3fb950; }
+.tk-opts { display: flex; flex-wrap: wrap; gap: 6px; margin: .2em 0 1em; }
+.tk-opt { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+.tk-opt:hover { border-color: #58a6ff; }
+.tk-opt.active { border-color: #58a6ff; color: #58a6ff; }
 </style>
 </head>
 <body>
@@ -78,6 +82,12 @@ tr:nth-child(even) { background: #161b22; }
   <label for="kitty-input">Instagram instance:</label>
   <input id="kitty-input" type="text" placeholder="kittygram.irelephant.net" style="padding:4px 8px;border-radius:4px;background:#21262d;color:#c9d1d9;border:1px solid #30363d;font-size:14px;width:230px;">
 </p>
+<p><label>TikTok front-end:</label></p>
+<div class="tk-opts" id="tk-opts">
+  <button type="button" class="tk-opt active" data-domain="exporttok.com" title="exporttok.com">exporttok.com</button>
+  <button type="button" class="tk-opt" data-domain="viewtikstories.com" title="viewtikstories.com">viewtikstories.com</button>
+  <button type="button" class="tk-opt" data-domain="www.tikvib.com" title="www.tikvib.com">tikvib.com</button>
+</div>
 <p style="font-size:12px;">Instance lists: <a href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" title="shitter (X) instances">1</a> <a href="https://status.d420.de/" target="_blank" title="Nitter uptime status">2</a> <a href="https://codeberg.org/irelephant/kittygram#instances" target="_blank" title="kittygram (Instagram) instances">3</a></p>
 <div class="pre-wrapper"><button class="copy-btn" id="bm-copy-btn">Copy</button>
 <pre style="word-break:break-all" id="bm-pre"></pre></div>
@@ -103,17 +113,28 @@ tr:nth-child(even) { background: #161b22; }
 <p>MIT</p>
 
 <script>
-var DEFAULTS = { nitter: 'shitter.thepixora.com', kitty: 'kittygram.irelephant.net' };
+var DEFAULTS = { nitter: 'shitter.thepixora.com', kitty: 'kittygram.irelephant.net', tiktok: 'exporttok.com' };
 
 // Standalone copy of the extension's routing, used to build the bookmarklet.
-function bookmarkletCode(nitter, kitty) {
+function bookmarkletCode(nitter, kitty, tiktok) {
+  var tiktokHost = String(tiktok).replace(/^www\./, '');
   return [
     '(function(){',
-    'var K="https://' + kitty + '",N="https://' + nitter + '",',
+    'var K="https://' + kitty + '",N="https://' + nitter + '",T="https://' + tiktok + '",TK="' + tiktokHost + '",',
     'u=new URL(location.href),h=u.hostname,p=u.pathname,q=u.search,s=u.searchParams,',
     'AL=["/explore","/direct","/accounts","/about","/hacked","/privacy","/popular"];',
     'function al(x){return AL.some(function(a){return x===a||x.indexOf(a+"/")===0})}',
     'function go(t){location.href=t}',
+    'function tk(u,r){',
+    'if(TK==="tikvib.com"){',
+    'if(r==="followers"||r==="following")return T+"/"+r+"/"+u;',
+    'if(r==="repost"||r==="reposts")return T+"/reposts/"+u;',
+    'return T+"/profile/"+u}',
+    'if(TK==="viewtikstories.com"){',
+    'if(r==="followers"||r==="following"||r==="repost"||r==="reposts"||r==="playlist")',
+    'return T+"/profile/"+u+"?tab="+(r==="repost"?"reposts":r);',
+    'return T+"/profile/"+u}',
+    'return T+"/tiktok/account/"+u}',
     'if(/(^|\\.)instagram\\.com$/.test(h)){',
     'var np=p;',
     'if(p.indexOf("/accounts/login")===0){var n=s.get("next");if(!n)return;',
@@ -126,9 +147,9 @@ function bookmarkletCode(nitter, kitty) {
     'go(N+p+q);return}',
     'if(/(^|\\.)tiktok\\.com$/.test(h)){',
     'var v=p.match(/^\\/@([^/]+)\\/(?:video|photo)\\/([0-9]+)/);',
-    'if(v){go("https://exporttok.com/tiktok/account/viewer/@"+v[1]+"/"+v[2]);return}',
-    'var ta=p.match(/^\\/@([^/]+)/);',
-    'if(ta){go("https://exporttok.com/tiktok/account/"+ta[1]);return}return}',
+    'if(v){go(T+(TK==="tikvib.com"?"/media/"+v[2]:TK==="viewtikstories.com"?"/comments/"+v[2]:"/tiktok/account/viewer/@"+v[1]+"/"+v[2]));return}',
+    'var ta=p.match(/^\\/@([^/]+)(?:\\/([^/?#]+))?/);',
+    'if(ta){go(tk(ta[1],ta[2]||""));return}return}',
     'if(/(^|\\.)threads\\.com$/.test(h)){',
     'var tp=p.match(/^\\/@[^/]+\\/post\\/([^/]+)/);',
     'if(tp){go("https://shoelace.mint.lgbt/t/"+tp[1]);return}',
@@ -144,16 +165,31 @@ function hostOnly(value, fallback) {
   return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(s) ? s : fallback;
 }
 
+function selectedTiktok() {
+  var active = document.querySelector('.tk-opt.active');
+  return active ? active.dataset.domain : DEFAULTS.tiktok;
+}
+
 function updateBookmarklet() {
   var nitter = hostOnly(document.getElementById('nitter-input').value, DEFAULTS.nitter);
   var kitty = hostOnly(document.getElementById('kitty-input').value, DEFAULTS.kitty);
+  var tiktok = selectedTiktok();
   document.getElementById('bm-pre').textContent =
-    'javascript:' + encodeURIComponent(bookmarkletCode(nitter, kitty));
+    'javascript:' + encodeURIComponent(bookmarkletCode(nitter, kitty, tiktok));
   document.getElementById('current-nitter').textContent = nitter;
   document.getElementById('current-kitty').textContent = kitty;
+  document.getElementById('current-tiktok').textContent = tiktok.replace(/^www\./, '');
 }
 document.getElementById('nitter-input').addEventListener('input', updateBookmarklet);
 document.getElementById('kitty-input').addEventListener('input', updateBookmarklet);
+document.querySelectorAll('.tk-opt').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tk-opt').forEach(function(other) {
+      other.classList.toggle('active', other === btn);
+    });
+    updateBookmarklet();
+  });
+});
 
 document.querySelectorAll('.pre-wrapper').forEach(function(wrapper) {
   var btn = wrapper.querySelector('.copy-btn');

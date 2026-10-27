@@ -101,11 +101,11 @@ for (const [raw, exp] of [
 
 // The landing page bookmarklet routes on its own; keep it in sync.
 const page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-eval(page.match(/function bookmarkletCode\(nitter, kitty\) \{[\s\S]*?\n\}/)[0]);
+eval(page.match(/function bookmarkletCode\(nitter, kitty, tiktok\) \{[\s\S]*?\n\}/)[0]);
 eval(page.match(/function hostOnly\(value, fallback\) \{[\s\S]*?\n\}/)[0]);
 
-function bm(url) {
-  const code = bookmarkletCode('shitter.thepixora.com', 'kittygram.irelephant.net');
+function bm(url, tiktok = 'exporttok.com') {
+  const code = bookmarkletCode('shitter.thepixora.com', 'kittygram.irelephant.net', tiktok);
   let dest = null;
   const loc = {};
   Object.defineProperty(loc, 'href', { get: () => url, set: v => { dest = v; } });
@@ -121,11 +121,18 @@ const bmTests = [
   ['https://x.com/hashtag/foo', 'https://shitter.thepixora.com/search?f=tweets&q=%23foo'],
   ['https://x.com/u?a=1', 'https://shitter.thepixora.com/u?a=1'],
   ['https://www.tiktok.com/@u/video/123', 'https://exporttok.com/tiktok/account/viewer/@u/123'],
+  ['https://www.tiktok.com/@u/video/123', 'https://viewtikstories.com/comments/123', 'viewtikstories.com'],
+  ['https://www.tiktok.com/@u/video/123', 'https://www.tikvib.com/media/123', 'www.tikvib.com'],
+  ['https://www.tiktok.com/@u', 'https://www.tikvib.com/profile/u', 'www.tikvib.com'],
+  ['https://www.tiktok.com/@u/followers', 'https://www.tikvib.com/followers/u', 'www.tikvib.com'],
+  ['https://www.tiktok.com/@u/repost', 'https://www.tikvib.com/reposts/u', 'www.tikvib.com'],
+  ['https://www.tiktok.com/@u', 'https://viewtikstories.com/profile/u', 'viewtikstories.com'],
+  ['https://www.tiktok.com/@u/playlist', 'https://viewtikstories.com/profile/u?tab=playlist', 'viewtikstories.com'],
   ['https://www.threads.com/@u/post/abc', 'https://shoelace.mint.lgbt/t/abc'],
 ];
 
-for (const [url, exp] of bmTests) {
-  const got = bm(url);
+for (const [url, exp, tiktok] of bmTests) {
+  const got = bm(url, tiktok);
   const ok = got === exp;
   if (!ok) fail++;
   console.log((ok ? 'OK  ' : 'FAIL'), 'bookmarklet', url, '=>', got);
