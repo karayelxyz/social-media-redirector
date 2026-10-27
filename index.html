@@ -62,6 +62,8 @@
     opacity: 0; transition: opacity .45s ease;
   }
   .slide.active { opacity: 1; }
+  /* reduced motion: keep the rotation, skip the fade */
+  .slider.instant .slide { transition: none; }
   .slide img { width: 100%; height: 100%; object-fit: contain; }
   .dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
   .dot {
@@ -479,13 +481,14 @@ fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
   }
 
   // One timer for the life of the page: hover and focus only skip a turn instead of
-  // stopping it, so a click on a dot can never leave the slider frozen.
-  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!still) {
-    setInterval(function() {
-      if (!paused()) show(current + 1);
-    }, 4200);
+  // stopping it, so a click on a dot can never leave the slider frozen. Reduced motion
+  // keeps the rotation but drops the fade, so the shots still cycle.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    slider.classList.add('instant');
   }
+  setInterval(function() {
+    if (!paused()) show(current + 1);
+  }, 4200);
 
   dots.forEach(function(dot, i) {
     dot.addEventListener('click', function() { show(i); });
