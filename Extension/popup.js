@@ -13,8 +13,8 @@ const INSTANCE_INFO = {
   x: {
     placeholder: 'shitter.thepixora.com',
     links: [
-      ['1', 'https://codeberg.org/shitter/shitter/wiki/Instances'],
-      ['2', 'https://status.d420.de/'],
+      ['official repository', 'https://codeberg.org/shitter/shitter/wiki/Instances'],
+      ['unofficial', 'https://status.d420.de/'],
     ],
   },
   instagram: {
