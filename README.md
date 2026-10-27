@@ -1,9 +1,4 @@
-<p align="center"><img src="assets/cover.png" alt="Social Media Redirector"></p>
-
-<h1 align="center">Social Media Redirector</h1>
-
-<p align="center">Read Instagram, X, TikTok and Threads without an account.<br>
-Every page is forwarded to a front-end that serves it without a login wall.</p>
+<p align="center"><img src="assets/readme-hero.png" alt="Social Media Redirector — read social media without login"></p>
 
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/social-media-redirector/gckenkjdlidnignifbbobohimoilmgcg"><img src="assets/chrome.png" alt="Available in the Chrome Web Store" height="52"></a>
@@ -12,12 +7,12 @@ Every page is forwarded to a front-end that serves it without a login wall.</p>
 </p>
 
 <p align="center">
-  <a href="https://karayelxyz.github.io/social-media-redirector"><img src="https://img.shields.io/badge/landing_page-online-3fb950" alt="Landing page"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2-58a6ff" alt="Version 1.2"></a>
+  <a href="https://karayelxyz.github.io/social-media-redirector"><img src="https://img.shields.io/badge/landing_page-online-58a6ff" alt="Landing page"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2-2f81f7" alt="Version 1.2"></a>
   <a href="#license"><img src="https://img.shields.io/badge/license-MIT-8b949e" alt="MIT license"></a>
 </p>
 
-## What it does
+## What it redirects
 
 | Platform | You open | You land on |
 |---|---|---|
@@ -49,6 +44,10 @@ TikTok front-ends disagree about their URL shape, so each one gets its own mappi
 - Works in Chrome, Edge and Firefox — one codebase, two manifests.
 
 <br clear="right">
+
+Each front-end is a separate site, so the popup lets you pick the one you trust:
+
+<p align="center"><img src="store-assets/screenshot-3-instances.png" alt="The three instance panels inside the popup" width="720"></p>
 
 ## Installation
 
