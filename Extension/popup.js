@@ -26,7 +26,7 @@ const INSTANCE_INFO = {
   tiktok: {
     // Three different third-party front-ends with their own URL schemes, so a
     // fixed list of buttons instead of a text field.
-    options: ['exporttok.com', 'www.tikvib.com', 'viewtikstories.com'],
+    options: ['exporttok.com', 'viewtikstories.com', 'www.tikvib.com'],
   },
 };
 
