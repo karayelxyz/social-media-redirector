@@ -52,8 +52,6 @@
   .store-buttons { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 24px 0 14px; }
   .store-buttons img { height: 52px; width: auto; }
   .store-buttons a:hover { opacity: .88; }
-  .meta { font-size: .85rem; color: var(--muted); }
-  .meta span { color: var(--line-strong); padding: 0 6px; }
   .hero-art img {
     border-radius: 16px; border: 1px solid var(--line);
     background: var(--panel); box-shadow: 0 24px 60px -30px rgba(0,0,0,.9);
@@ -83,16 +81,6 @@
   .arrow { color: var(--accent); font-weight: 700; }
   .note { font-size: .78rem; color: var(--muted); }
 
-  /* details */
-  details {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-    padding: 0 16px; margin-bottom: 10px;
-  }
-  details[open] { padding-bottom: 14px; }
-  summary { cursor: pointer; font-weight: 600; padding: 12px 0; list-style: none; }
-  summary::-webkit-details-marker { display: none; }
-  summary::before { content: '▸'; color: var(--accent); display: inline-block; margin-right: 8px; transition: transform .15s; }
-  details[open] summary::before { transform: rotate(90deg); }
   ol { margin: 4px 0 0; padding-left: 22px; color: var(--muted); font-size: .92rem; }
   ol li { margin: 4px 0; }
   code {
@@ -120,12 +108,21 @@
   }
   .tk-opt:hover { border-color: var(--accent); }
   .tk-opt.active { border-color: var(--accent); color: #cfe2f6; background: rgba(88,166,255,.14); }
-  .lists { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted); margin: 4px 0 16px; }
-  .lists a {
-    display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px;
-    border: 1px solid var(--line-strong); color: var(--text); font-size: .75rem;
+  .standalone {
+    border-color: var(--line-strong);
+    background: linear-gradient(180deg, rgba(88,166,255,.05), transparent 45%), var(--panel);
   }
-  .lists a:hover { border-color: var(--accent); text-decoration: none; }
+  .solo {
+    display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px;
+    font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .solo::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .inst-lists { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .78rem; color: var(--muted); margin-bottom: 10px; }
+  .chip {
+    padding: 3px 10px; border-radius: 999px; font-size: .75rem;
+    background: var(--panel-2); border: 1px solid var(--line-strong); color: var(--text);
+  }
+  .chip:hover { border-color: var(--accent); color: #cfe2f6; text-decoration: none; }
 
   .pre-wrapper { position: relative; }
   .copy-btn {
@@ -230,7 +227,6 @@
         <a href="https://addons.mozilla.org/en-US/firefox/addon/social-media-redirector/"><img src="assets/firefox.png" alt="Get it for Firefox"></a>
         <a href="https://microsoftedge.microsoft.com/addons/detail/social-media-redirector/ahioadaknnlfbkdhmebmkhnjllglcffj"><img src="assets/edge.png" alt="Get it for Edge"></a>
       </div>
-      <p class="meta">No accounts<span>·</span>no tracking<span>·</span>everything runs locally</p>
     </div>
     <div class="hero-art">
       <img src="assets/cover.png" alt="Social Media Redirector">
@@ -242,22 +238,22 @@
     <div class="cards">
       <article class="card">
         <h3>Instagram</h3>
-        <p class="flow"><span class="host">instagram.com</span><span class="arrow">&rarr;</span><span class="host" id="current-kitty">kittygram.irelephant.net</span></p>
-        <p class="note">Posts, reels, stories, tagged and profiles. ⚙ in the popup changes the instance.</p>
+        <p class="flow"><span class="host">instagram.com</span><span class="arrow">&rarr;</span><span class="host">kittygram</span></p>
+        <p class="note">Posts, reels, stories, tagged and profiles — served without a login wall.</p>
       </article>
       <article class="card">
         <h3>X</h3>
-        <p class="flow"><span class="host">x.com</span><span class="arrow">&rarr;</span><span class="host" id="current-nitter">shitter.thepixora.com</span></p>
-        <p class="note">Timelines, posts, hashtags and profiles. ⚙ in the popup changes the instance.</p>
+        <p class="flow"><span class="host">x.com</span><span class="arrow">&rarr;</span><span class="host">shitter</span></p>
+        <p class="note">A fork of Nitter: timelines, posts, hashtags and profiles.</p>
       </article>
       <article class="card">
         <h3>TikTok</h3>
-        <p class="flow"><span class="host">tiktok.com</span><span class="arrow">&rarr;</span><span class="host" id="current-tiktok">exporttok.com</span></p>
-        <p class="note">Profiles and videos. Choose between three front-ends with ⚙.</p>
+        <p class="flow"><span class="host">tiktok.com</span><span class="arrow">&rarr;</span><span class="host">front-ends</span></p>
+        <p class="note">Profiles and videos on exporttok, tikvib or viewtikstories — pick one.</p>
       </article>
       <article class="card">
         <h3>Threads</h3>
-        <p class="flow"><span class="host">threads.com</span><span class="arrow">&rarr;</span><span class="host">shoelace.mint.lgbt</span></p>
+        <p class="flow"><span class="host">threads.com</span><span class="arrow">&rarr;</span><span class="host">shoelace</span></p>
         <p class="note">Posts and profile pages.</p>
       </article>
     </div>
@@ -265,28 +261,18 @@
 
   <section>
     <h2>Install</h2>
-    <details>
-      <summary>Chrome or Edge — from the store</summary>
-      <ol>
-        <li>Use the store button above.</li>
-        <li>Confirm <strong>Add to Chrome</strong> / <strong>Get</strong>.</li>
-        <li>Pin the icon so the on/off toggle is one click away.</li>
-      </ol>
-    </details>
-    <details>
-      <summary>Manual install (developer mode)</summary>
-      <ol>
-        <li>Download the latest release from <a href="https://github.com/karayelxyz/social-media-redirector/releases">GitHub releases</a>.</li>
-        <li><strong>Chrome:</strong> open <code>chrome://extensions/</code>, enable <strong>Developer mode</strong>, click <strong>Load unpacked</strong> and pick the extension folder.</li>
-        <li><strong>Firefox:</strong> open <code>about:addons</code>, click the gear icon &rarr; <strong>Install Add-on From File</strong> and pick the signed <code>.xpi</code>.</li>
-      </ol>
-    </details>
+    <p class="lede">Download the latest release from <a href="https://github.com/karayelxyz/social-media-redirector/releases">GitHub releases</a>, then:</p>
+    <ol>
+      <li><strong>Chrome / Edge:</strong> open <code>chrome://extensions/</code> (<code>edge://extensions/</code>), enable <strong>Developer mode</strong>, click <strong>Load unpacked</strong> and pick the extension folder.</li>
+      <li><strong>Firefox:</strong> open <code>about:addons</code>, click the gear icon &rarr; <strong>Install Add-on From File</strong> and pick the signed <code>.xpi</code>.</li>
+    </ol>
   </section>
 
   <section>
     <h2>Bookmarklet</h2>
-    <p class="lede">No extension? Create a bookmark from the URL below, then click it on any Instagram, X, TikTok or Threads page. It does the same forwarding, once per click.</p>
-    <div class="code-card">
+    <p class="lede">Not part of the extension: a bookmark that forwards the page you are on, one click at a time.</p>
+    <div class="code-card standalone">
+      <p class="solo">Standalone</p>
       <div class="controls">
         <div class="field">
           <label for="nitter-input">X instance</label>
@@ -305,11 +291,15 @@
           </div>
         </div>
       </div>
-      <p class="lists">Instance lists
-        <a href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" rel="noopener" title="shitter (X) instances">1</a>
-        <a href="https://status.d420.de/" target="_blank" rel="noopener" title="Nitter uptime status">2</a>
-        <a href="https://codeberg.org/irelephant/kittygram#instances" target="_blank" rel="noopener" title="kittygram (Instagram) instances">3</a>
-      </p>
+      <div class="inst-lists">
+        <span class="group-label">X instances</span>
+        <a class="chip" href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" rel="noopener" title="shitter instance list">official repository</a>
+        <a class="chip" href="https://status.d420.de/" target="_blank" rel="noopener" title="Nitter uptime status">unofficial</a>
+      </div>
+      <div class="inst-lists">
+        <span class="group-label">Instagram instances</span>
+        <a class="chip" href="https://codeberg.org/irelephant/kittygram#instances" target="_blank" rel="noopener" title="kittygram instance list">official repository</a>
+      </div>
       <div class="pre-wrapper">
         <button class="copy-btn" type="button">Copy</button>
         <pre id="bm-pre"></pre>
@@ -317,29 +307,9 @@
     </div>
   </section>
 
-  <section>
-    <h2>Build from source</h2>
-    <details>
-      <summary>Chrome package</summary>
-      <div class="pre-wrapper">
-        <button class="copy-btn" type="button">Copy</button>
-        <pre>zip -r social-media-redirector-chrome.zip Extension/manifest.json Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js Extension/images/</pre>
-      </div>
-    </details>
-    <details>
-      <summary>Firefox package</summary>
-      <div class="pre-wrapper">
-        <button class="copy-btn" type="button">Copy</button>
-        <pre>cp Extension/manifest-firefox.json Extension/manifest.json &amp;&amp; zip -r social-media-redirector-firefox.zip Extension/manifest.json Extension/background.js Extension/content.js Extension/popup.html Extension/popup.js Extension/images/</pre>
-      </div>
-    </details>
-    <p class="note">Releases are built automatically by GitHub Actions.</p>
-  </section>
-
   <footer>
     <a href="PRIVACY_POLICY.html">Privacy Policy</a>
     <span>MIT License</span>
-    <a href="https://github.com/karayelxyz/social-media-redirector">Source on GitHub</a>
   </footer>
 
 </div>
@@ -408,9 +378,6 @@ function updateBookmarklet() {
   var tiktok = selectedTiktok();
   document.getElementById('bm-pre').textContent =
     'javascript:' + encodeURIComponent(bookmarkletCode(nitter, kitty, tiktok));
-  document.getElementById('current-nitter').textContent = nitter;
-  document.getElementById('current-kitty').textContent = kitty;
-  document.getElementById('current-tiktok').textContent = tiktok.replace(/^www\./, '');
 }
 
 document.getElementById('nitter-input').addEventListener('input', updateBookmarklet);
