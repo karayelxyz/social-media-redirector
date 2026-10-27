@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://karayelxyz.github.io/social-media-redirector"><img src="https://img.shields.io/badge/landing-page-58a6ff" alt="Landing page"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2-2f81f7" alt="Version 1.2"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.1-2f81f7" alt="Version 1.2.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-8b949e" alt="MIT license"></a>
 </p>
 

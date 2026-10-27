@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-10-27
+
+### Changed
+- Dropped the `tabs` permission. `tabs.update`, `tabs.reload`, `tabs.query` and `tabs.sendMessage` never needed it; the only sensitive read was the active tab's URL, and the `host_permissions` the extension already declares expose it for the four supported sites, which is the only place it is used
+- Permission set is now `declarativeNetRequest`, `declarativeNetRequestWithHostAccess`, `storage`, `webNavigation`
+
 ## [1.2] - 2026-10-27
 
 ### Changed

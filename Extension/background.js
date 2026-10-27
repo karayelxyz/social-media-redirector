@@ -437,7 +437,10 @@ async function redirectCurrentTab(platform) {
     return forwardUrl(url);
   };
   // Active tab first; lastTabs is only a fallback (popup on Android often
-  // hides the active tab from tabs.query).
+  // hides the active tab from tabs.query). No "tabs" permission is requested:
+  // update/reload/query/sendMessage need none, and tab.url is readable for the
+  // four supported sites because host_permissions cover them — the only hosts
+  // this function ever acts on.
   let best = null;
   let tabs = [];
   try { tabs = await W.tabs.query({ active: true, currentWindow: true }); } catch (e) { tabs = []; }

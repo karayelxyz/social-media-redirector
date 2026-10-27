@@ -140,5 +140,27 @@ for (const [url, exp, tiktok] of bmTests) {
   if (!ok) console.log('     expected:', exp);
 }
 
+// Manifest guards: the permission set stays minimal (Chrome rejected a build
+// that asked for `tabs` without needing it) and every store gets the same hosts.
+const manifests = {
+  chrome: JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'Extension', 'manifest.json'), 'utf8')),
+  firefox: JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'Extension', 'manifest-firefox.json'), 'utf8')),
+};
+const perms = ['declarativeNetRequest', 'declarativeNetRequestWithHostAccess', 'storage', 'webNavigation'];
+const DEFAULTS = (0, eval)('(' + defs.replace(/^const DEFAULT_INSTANCES = /, '').replace(/;\s*$/, '') + ')');
+for (const [name, m] of Object.entries(manifests)) {
+  const permOk = JSON.stringify(m.permissions) === JSON.stringify(perms);
+  if (!permOk) fail++;
+  console.log((permOk ? 'OK  ' : 'FAIL'), 'manifest', name, 'permissions =', m.permissions.join(','));
+
+  const missing = Object.values(DEFAULTS).filter(h => !m.host_permissions.includes('*://' + h + '/*'));
+  const hostOk = missing.length === 0;
+  if (!hostOk) fail++;
+  console.log((hostOk ? 'OK  ' : 'FAIL'), 'manifest', name, 'lists every default front-end host', missing.join(','));
+}
+const syncOk = manifests.chrome.version === manifests.firefox.version;
+if (!syncOk) fail++;
+console.log((syncOk ? 'OK  ' : 'FAIL'), 'manifests share version', manifests.chrome.version);
+
 console.log(fail === 0 ? '\nALL PASS' : '\n' + fail + ' FAILED');
 process.exit(fail === 0 ? 0 : 1);
