@@ -457,14 +457,13 @@ fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
   })
   .catch(function() {});
 
-// Popup preview: three static shots of the same popup, one per front-end panel.
+// Popup preview: three shots of the same popup, one per front-end panel.
 (function() {
   var slider = document.getElementById('popup-slider');
   if (!slider) return;
   var slides = Array.prototype.slice.call(slider.querySelectorAll('.slide'));
   var dots = Array.prototype.slice.call(slider.querySelectorAll('.dot'));
   var current = 0;
-  var timer = 0;
 
   function show(next) {
     current = (next + slides.length) % slides.length;
@@ -475,22 +474,19 @@ fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
     });
   }
 
-  function stop() { clearInterval(timer); timer = 0; }
-
-  function start() {
-    stop();
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    timer = setInterval(function() { show(current + 1); }, 4200);
+  function paused() {
+    return slider.matches(':hover') || slider.contains(document.activeElement);
   }
 
+  // One timer for the life of the page: hover and focus only skip a turn instead of
+  // stopping it, so a click on a dot can never leave the slider frozen.
+  setInterval(function() {
+    if (!paused()) show(current + 1);
+  }, 4200);
+
   dots.forEach(function(dot, i) {
-    dot.addEventListener('click', function() { show(i); start(); });
+    dot.addEventListener('click', function() { show(i); });
   });
-  slider.addEventListener('mouseenter', stop);
-  slider.addEventListener('mouseleave', start);
-  slider.addEventListener('focusin', stop);
-  slider.addEventListener('focusout', start);
-  start();
 })();
 </script>
 </body>
