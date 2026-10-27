@@ -277,6 +277,11 @@ async function render() {
 
     const toggle = document.createElement('div');
     toggle.className = enabled ? 'toggle on' : 'toggle';
+    // Keyboard/screen-reader parity: the row is a switch, not decoration.
+    toggle.setAttribute('role', 'switch');
+    toggle.tabIndex = 0;
+    toggle.setAttribute('aria-checked', String(enabled));
+    toggle.setAttribute('aria-label', s.label);
 
     row.appendChild(toggle);
     list.appendChild(row);
@@ -292,11 +297,21 @@ list.addEventListener('click', (ev) => {
   if (!s) return;
   const newVal = !toggleEl.classList.contains('on');
   toggleEl.classList.toggle('on', newVal);
+  toggleEl.setAttribute('aria-checked', String(newVal));
 
   W.storage.local.set({ [s.key]: newVal }).catch(() => {});
   // Wake-up signal for the background worker; storage.onChanged is the
   // single driver of the toggle logic.
   W.runtime.sendMessage({ type: 'toggle', key: s.key, value: newVal }).catch(() => {});
+});
+
+// Same control from the keyboard: Enter or Space flips the focused switch.
+list.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  const toggleEl = ev.target.closest && ev.target.closest('.toggle');
+  if (!toggleEl) return;
+  ev.preventDefault();
+  toggleEl.click();
 });
 
 W.storage.onChanged.addListener((changes, area) => {
