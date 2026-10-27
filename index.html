@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -244,7 +244,7 @@
       <article class="card">
         <h3>X</h3>
         <p class="flow"><span class="host">x.com</span><span class="arrow">&rarr;</span><span class="host">shitter</span></p>
-        <p class="note">A fork of Nitter: timelines, posts, hashtags and profiles.</p>
+        <p class="note">shitter is a nitter fork — timelines, posts, hashtags and profiles.</p>
       </article>
       <article class="card">
         <h3>TikTok</h3>
@@ -275,8 +275,8 @@
       <p class="solo">Standalone</p>
       <div class="controls">
         <div class="field">
-          <label for="nitter-input">X instance</label>
-          <input id="nitter-input" type="text" placeholder="shitter.thepixora.com" autocomplete="off" spellcheck="false">
+          <label for="x-input">X instance</label>
+          <input id="x-input" type="text" placeholder="shitter.thepixora.com" autocomplete="off" spellcheck="false">
         </div>
         <div class="field">
           <label for="kitty-input">Instagram instance</label>
@@ -294,7 +294,7 @@
       <div class="inst-lists">
         <span class="group-label">X instances</span>
         <a class="chip" href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" rel="noopener" title="shitter instance list">official repository</a>
-        <a class="chip" href="https://status.d420.de/" target="_blank" rel="noopener" title="Nitter uptime status">unofficial</a>
+        <a class="chip" href="https://status.d420.de/" target="_blank" rel="noopener" title="instance status page">unofficial</a>
       </div>
       <div class="inst-lists">
         <span class="group-label">Instagram instances</span>
@@ -315,14 +315,14 @@
 </div>
 
 <script>
-var DEFAULTS = { nitter: 'shitter.thepixora.com', kitty: 'kittygram.irelephant.net', tiktok: 'exporttok.com' };
+var DEFAULTS = { x: 'shitter.thepixora.com', kitty: 'kittygram.irelephant.net', tiktok: 'exporttok.com' };
 
 // Standalone copy of the extension's routing, used to build the bookmarklet.
-function bookmarkletCode(nitter, kitty, tiktok) {
+function bookmarkletCode(xInst, kitty, tiktok) {
   var tiktokHost = String(tiktok).replace(/^www\./, '');
   return [
     '(function(){',
-    'var K="https://' + kitty + '",N="https://' + nitter + '",T="https://' + tiktok + '",TK="' + tiktokHost + '",',
+    'var K="https://' + kitty + '",N="https://' + xInst + '",T="https://' + tiktok + '",TK="' + tiktokHost + '",',
     'u=new URL(location.href),h=u.hostname,p=u.pathname,q=u.search,s=u.searchParams,',
     'AL=["/explore","/direct","/accounts","/about","/hacked","/privacy","/popular"];',
     'function al(x){return AL.some(function(a){return x===a||x.indexOf(a+"/")===0})}',
@@ -373,14 +373,14 @@ function selectedTiktok() {
 }
 
 function updateBookmarklet() {
-  var nitter = hostOnly(document.getElementById('nitter-input').value, DEFAULTS.nitter);
+  var xInst = hostOnly(document.getElementById('x-input').value, DEFAULTS.x);
   var kitty = hostOnly(document.getElementById('kitty-input').value, DEFAULTS.kitty);
   var tiktok = selectedTiktok();
   document.getElementById('bm-pre').textContent =
-    'javascript:' + encodeURIComponent(bookmarkletCode(nitter, kitty, tiktok));
+    'javascript:' + encodeURIComponent(bookmarkletCode(xInst, kitty, tiktok));
 }
 
-document.getElementById('nitter-input').addEventListener('input', updateBookmarklet);
+document.getElementById('x-input').addEventListener('input', updateBookmarklet);
 document.getElementById('kitty-input').addEventListener('input', updateBookmarklet);
 document.querySelectorAll('.tk-opt').forEach(function(btn) {
   btn.addEventListener('click', function() {

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Instagram now redirects to **kittygram** instead of imginn. kittygram mirrors Instagram paths 1:1, so one host-swap rule replaces the six imginn-specific path rules (profiles, posts, reels, stories, tagged, root)
-- X now redirects to **shitter**, the maintained Nitter fork (default `shitter.thepixora.com`)
+- X now redirects to **shitter** (nitter fork) — default `shitter.thepixora.com`
 - Both Instagram and X front-end instances are now configurable from the popup ⚙ (Instagram gets its own gear)
 - TikTok front-end is configurable too: **exporttok** (default), **tikvib** or **viewtikstories**, each mapped with its own URL scheme (`/tiktok/account/…`, `/profile/…`, `/profile/…?tab=…`)
 - Instance list links in the popup are tappable chips ("official repository" / "unofficial"), not bare numbers
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `host_permissions` / `content_scripts` swap `imginn.com` for the default kittygram and shitter hosts
 
 ### Added
-- Per-platform instance config (`nitter_instance`, `kittygram_instance`, `tiktok_instance`) with host normalization — pasting a full URL works
+- Per-platform instance config with host normalization — pasting a full URL works
 - TikTok pages beyond profile/video now map instead of silently landing on the profile: followers, following, reposts and playlists where the chosen front-end has them
 - `forwardRules()` is built per call, so a new instance updates the forward rules and the current-tab redirect together
 - Landing page bookmarklet takes both instances and is generated from the same routing as the extension
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Root `instagram.com` (with trailing slash) now redirects to `imginn.com`
 - Instagram profile catchall keeps a trailing slash on the `imginn.com` destination
-- X `/hashtag/{tag}` paths redirect to Nitter search (`?q=%23{tag}`) instead of a broken path
+- X `/hashtag/{tag}` paths redirect to shitter search (`?q=%23{tag}`) instead of a broken path
 - Instagram/X login pages now capture the `?next=` / `?redirect_after_login=` destination and redirect to the proxy (instead of leaving the user on the login page)
 - Toggle redirect now also handles login pages with redirect parameters (previously only a manual reload triggered the redirect)
 - Bookmarklet: X section's premature `return` no longer blocks redirects on non-login X pages; root Instagram handled; re-synced with extension rules

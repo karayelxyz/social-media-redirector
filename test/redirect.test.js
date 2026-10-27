@@ -51,8 +51,8 @@ for (const [orig, expFwd] of tests) check(orig, expFwd);
 // Swapping the instance must move the forward target.
 setInst('instagram', 'kg.meowing.de');
 check('https://www.instagram.com/u', 'https://kg.meowing.de/u');
-setInst('x', 'nitter.tiekoetter.com');
-check('https://x.com/u', 'https://nitter.tiekoetter.com/u');
+setInst('x', 'shitter.example.org');
+check('https://x.com/u', 'https://shitter.example.org/u');
 
 // TikTok front-ends disagree on paths: each scheme maps its own pages, and an
 // unknown host must keep the exporttok scheme.
@@ -87,7 +87,7 @@ eval(popupSrc.match(/function hostOnly\(value, fallback\) \{[\s\S]*?\n\}/)[0]);
 for (const [raw, exp] of [
   ['kittygram.irelephant.net', 'kittygram.irelephant.net'],
   ['https://kg.meowing.de/u?x=1', 'kg.meowing.de'],
-  ['  NITTER.Tiekoetter.COM  ', 'nitter.tiekoetter.com'],
+  ['  SHITTER.Example.ORG  ', 'shitter.example.org'],
   ['', null],
   ['not a host', null],
   ['http://', null],
@@ -101,7 +101,7 @@ for (const [raw, exp] of [
 
 // The landing page bookmarklet routes on its own; keep it in sync.
 const page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-eval(page.match(/function bookmarkletCode\(nitter, kitty, tiktok\) \{[\s\S]*?\n\}/)[0]);
+eval(page.match(/function bookmarkletCode\(xInst, kitty, tiktok\) \{[\s\S]*?\n\}/)[0]);
 eval(page.match(/function hostOnly\(value, fallback\) \{[\s\S]*?\n\}/)[0]);
 
 function bm(url, tiktok = 'exporttok.com') {
