@@ -119,7 +119,8 @@
   .island h2 { margin-bottom: 16px; }
   .island .eyebrow { margin-bottom: 12px; }
   .island .code-card { background: var(--bg); }
-  .inst-lists { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 0; }
+  .inst-lists { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 0; }
+  .inst-note { color: var(--muted); font-size: .74rem; }
   .chip {
     padding: 3px 10px; border-radius: 999px; font-size: .75rem;
     background: var(--panel-2); border: 1px solid var(--line-strong); color: var(--text);
@@ -280,7 +281,7 @@
         <div class="field">
           <label for="x-input">X instance</label>
           <input id="x-input" type="text" placeholder="shitter.thepixora.com" autocomplete="off" spellcheck="false">
-          <div class="inst-lists">
+          <div class="inst-lists"><span class="inst-note">Find a working instance from these sources:</span>
             <a class="chip" href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" rel="noopener" title="shitter instance list">official repository</a>
             <a class="chip" href="https://status.d420.de/" target="_blank" rel="noopener" title="instance status page">unofficial</a>
           </div>
@@ -288,7 +289,7 @@
         <div class="field">
           <label for="kitty-input">Instagram instance</label>
           <input id="kitty-input" type="text" placeholder="kittygram.irelephant.net" autocomplete="off" spellcheck="false">
-          <div class="inst-lists">
+          <div class="inst-lists"><span class="inst-note">Find a working instance from these sources:</span>
             <a class="chip" href="https://codeberg.org/irelephant/kittygram#instances" target="_blank" rel="noopener" title="kittygram instance list">official repository</a>
           </div>
         </div>
