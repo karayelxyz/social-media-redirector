@@ -147,6 +147,49 @@
     display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .85rem; color: var(--muted);
   }
 
+  /* open source bar */
+  .ghbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,15,21,.78);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .ghbar-in {
+    max-width: 940px; margin: 0 auto; padding: 0 20px; height: 50px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .ghrepo { display: flex; align-items: center; gap: 9px; color: var(--text); font-size: .84rem; min-width: 0; }
+  .ghrepo:hover { text-decoration: none; color: #fff; }
+  .ghrepo svg { flex: none; opacity: .85; }
+  .ghpath {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ghmtag {
+    flex: none; font-size: .64rem; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--ok); background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.42);
+    padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .ghstar {
+    flex: none; display: inline-flex; align-items: center; gap: 7px;
+    font-size: .8rem; font-weight: 700; color: #0a0f15;
+    background: linear-gradient(180deg, #f4f8fc, #cbd8e6);
+    border: 1px solid rgba(255,255,255,.55); border-radius: 9px;
+    padding: 7px 13px; box-shadow: 0 2px 12px rgba(88,166,255,.28);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .ghstar:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 5px 20px rgba(88,166,255,.45); }
+  .ghstar svg { flex: none; }
+  .ghn {
+    display: none; padding-left: 8px; border-left: 1px solid rgba(10,15,21,.25);
+    font-variant-numeric: tabular-nums;
+  }
+  .ghn.on { display: inline; }
+  @media (max-width: 620px) {
+    .ghpath, .ghmtag { display: none; }
+    .ghbar-in { height: 46px; padding: 0 16px; }
+  }
+
   @media (min-width: 860px) {
     .hero { grid-template-columns: 1.05fr .95fr; align-items: center; }
     .hero-art img { max-height: 330px; object-fit: contain; width: 100%; }
@@ -159,6 +202,22 @@
 </style>
 </head>
 <body>
+
+<div class="ghbar">
+  <div class="ghbar-in">
+    <a class="ghrepo" href="https://github.com/karayelxyz/social-media-redirector" aria-label="Social Media Redirector on GitHub">
+      <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      <span class="ghpath">karayelxyz / social-media-redirector</span>
+      <span class="ghmtag">open source</span>
+    </a>
+    <a class="ghstar" id="gh-star" href="https://github.com/karayelxyz/social-media-redirector" aria-label="Star Social Media Redirector on GitHub">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 .25l2.06 4.18 4.61.67-3.33 3.25.79 4.59L8 10.77l-4.13 2.17.79-4.59L1.33 5.1l4.61-.67L8 .25Z"/></svg>
+      <span>Star</span>
+      <span class="ghn" id="gh-count"></span>
+    </a>
+  </div>
+</div>
+
 <div class="wrap">
 
   <header class="hero">
@@ -171,7 +230,7 @@
         <a href="https://addons.mozilla.org/en-US/firefox/addon/social-media-redirector/"><img src="assets/firefox.png" alt="Get it for Firefox"></a>
         <a href="https://microsoftedge.microsoft.com/addons/detail/social-media-redirector/ahioadaknnlfbkdhmebmkhnjllglcffj"><img src="assets/edge.png" alt="Get it for Edge"></a>
       </div>
-      <p class="meta">Free and open source<span>·</span>no accounts<span>·</span>no tracking<span>·</span><a href="https://github.com/karayelxyz/social-media-redirector">GitHub</a></p>
+      <p class="meta">No accounts<span>·</span>no tracking<span>·</span>everything runs locally</p>
     </div>
     <div class="hero-art">
       <img src="assets/cover.png" alt="Social Media Redirector">
@@ -387,6 +446,17 @@ document.querySelectorAll('.pre-wrapper').forEach(function(wrapper) {
 });
 
 updateBookmarklet();
+
+// Star count is decoration: the link works without it, and any failure is silent.
+fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
+  .then(function(r) { return r.ok ? r.json() : null; })
+  .then(function(repo) {
+    var count = document.getElementById('gh-count');
+    if (!repo || !(repo.stargazers_count > 0)) return;
+    count.textContent = repo.stargazers_count;
+    count.classList.add('on');
+  })
+  .catch(function() {});
 </script>
 </body>
 </html>
