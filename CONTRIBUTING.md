@@ -14,7 +14,8 @@ No build step or dependencies — the extension is plain JavaScript.
 
 - Plain JS, no dependencies, no transpilers — code must run as-is in both Chrome MV3 (service worker) and Firefox MV3 (background scripts).
 - Use the `W` alias pattern (`typeof browser !== 'undefined' ? browser : chrome`) for cross-browser APIs; all API calls are promise-based with `.catch(() => {})` where failure is tolerable.
-- Platform support changes must update both manifests and all rule tables — see `AGENTS.md` for the full checklist.
+- Platform support changes must update both manifests, the rule tables in `Extension/background.js`, `INSTANCE_INFO` in `Extension/popup.js`, and the platform tables in `index.html` and `README.md`.
+- Adding a new front-end host also needs `host_permissions` in both manifests — Firefox only redirects to hosts the extension is allowed to touch.
 - Bump `version` in `Extension/manifest.json` **and** `Extension/manifest-firefox.json` together.
 
 ## Tests
@@ -26,7 +27,7 @@ node --check Extension/popup.js
 node test/redirect.test.js
 ```
 
-The test suite validates forward URL mapping for every platform. Add a case whenever you add or change a URL pattern.
+The test suite loads the real sources (`Extension/background.js`, `Extension/popup.js`, `index.html`) and checks the forwarding table for every platform and front-end, the instance swap, the bookmarklet generator, and that the removed reverse direction stays removed. Add a case whenever you add or change a URL pattern.
 
 ## Pull Requests
 

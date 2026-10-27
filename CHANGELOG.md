@@ -54,7 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - All debug logging and the popup rules-status panel
 - Unused `webRequest` / `webRequestBlocking` permissions (Firefox)
-- Instagram/X login-redirect capture blocks
 
 ### Fixed
 - Domain checks use hostname parsing instead of URL substring matching

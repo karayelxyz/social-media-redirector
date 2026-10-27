@@ -97,10 +97,15 @@ function tiktokRules(host) {
   ];
 }
 
+// Instagram pages that must stay on instagram.com: the login screen needs its
+// `?next=` target handled by checkLoginRedirect(), and the rest are either
+// account-bound or have no front-end equivalent. One list, two consumers.
+const LOGIN_ALLOW_PATHS = ['/explore', '/direct', '/accounts', '/about', '/hacked', '/privacy', '/popular'];
+
 function forwardRules() {
   return [
     { platforms: ['instagram'], priority: 10, allow: true,
-      from: '^https://(?:[^/.]+\\.)?instagram\\.com/(?:explore|direct|accounts|about|hacked|privacy|popular)(?:/|$)' },
+      from: `^https://(?:[^/.]+\\.)?instagram\\.com(?:${LOGIN_ALLOW_PATHS.join('|')})(?:/|$)` },
     { platforms: ['instagram'], priority: 9,
       from: '^https://(?:[^/.]+\\.)?instagram\\.com(?:/(.*))?$',
       to:   `https://${instances.instagram}/\\1` },
@@ -284,8 +289,6 @@ function forwardUrl(url) {
   }
   return null;
 }
-
-const LOGIN_ALLOW_PATHS = ['/explore', '/direct', '/accounts', '/about', '/hacked', '/privacy', '/popular'];
 
 async function checkLoginRedirect(url, host) {
   let u;

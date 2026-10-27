@@ -341,7 +341,7 @@
 
   <footer>
     <a href="PRIVACY_POLICY.html">Privacy Policy</a>
-    <span>MIT License</span>
+    <a href="https://github.com/karayelxyz/social-media-redirector/blob/main/LICENSE">MIT License</a>
   </footer>
 
 </div>
@@ -480,9 +480,12 @@ fetch('https://api.github.com/repos/karayelxyz/social-media-redirector')
 
   // One timer for the life of the page: hover and focus only skip a turn instead of
   // stopping it, so a click on a dot can never leave the slider frozen.
-  setInterval(function() {
-    if (!paused()) show(current + 1);
-  }, 4200);
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!still) {
+    setInterval(function() {
+      if (!paused()) show(current + 1);
+    }, 4200);
+  }
 
   dots.forEach(function(dot, i) {
     dot.addEventListener('click', function() { show(i); });

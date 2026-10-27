@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://karayelxyz.github.io/social-media-redirector"><img src="https://img.shields.io/badge/landing-page-58a6ff" alt="Landing page"></a>
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2-2f81f7" alt="Version 1.2"></a>
-  <a href="#license"><img src="https://img.shields.io/badge/license-MIT-8b949e" alt="MIT license"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-8b949e" alt="MIT license"></a>
 </p>
 
 ## What it does
@@ -130,9 +130,7 @@ version check ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 The extension reads tab URLs to know what to redirect and keeps your switches and instance choices in
 local storage. Nothing is collected, nothing is sent. [Full policy](PRIVACY_POLICY.html).
 
-<a id="license"></a>
-
 ## License
 
-MIT. Bug reports, front-end suggestions and pull requests are welcome — see
-[CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
+MIT © 2026 karayelxyz — see [LICENSE](LICENSE). Bug reports, front-end suggestions and pull requests are
+welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).

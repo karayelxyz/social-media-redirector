@@ -3,11 +3,12 @@ const path = require('path');
 const src = fs.readFileSync(path.join(__dirname, '..', 'Extension', 'background.js'), 'utf8');
 const defs = src.match(/const DEFAULT_INSTANCES = \{[\s\S]*?\n\};/)[0];
 const dm = src.match(/const DOMAINS = \{[\s\S]*?\n\};/)[0];
+const allowPaths = src.match(/const LOGIN_ALLOW_PATHS = \[[^\]]*\];/)[0];
 const hh = src.match(/function hostOf[\s\S]*?\n\}/)[0] + '\n' + src.match(/function hostMatches[\s\S]*?\n\}/)[0];
 const fr = src.match(/function forwardRules\(\) \{[\s\S]*?\n\}/)[0];
 const tk = src.match(/function tiktokRules\(host\) \{[\s\S]*?\n\}/)[0];
 const ff = src.match(/function forwardUrl\(url\) \{[\s\S]*?\n\}/)[0];
-eval('const ALLOW = true;\n' + defs + '\n' +
+eval(defs + '\n' + allowPaths + '\n' +
   'const instances = { ...DEFAULT_INSTANCES };\n' +
   dm + '\n' + hh + '\n' + tk + '\n' + fr + '\n' + ff + '\n' +
   'function setInst(platform, domain) { instances[platform] = domain; }');
