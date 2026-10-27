@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<meta name="google-site-verification" content="NV4D20M9Rvu4T4Z9O-O4syN90y5ls_rcBzN7pmdPlsc"/>
+<meta name="google-site-verification" content="NV4D20M9Rvu4T4Z9-O-O4syN90y5ls_rcBzN7pmdPlsc"/>
 <title>Social Media Redirector</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <style>
@@ -36,8 +36,8 @@ tr:nth-child(even) { background: #161b22; }
 
 <table>
   <tr><th>Platform</th><th>Original</th><th>Redirect</th></tr>
-  <tr><td>Instagram</td><td>instagram.com</td><td>imginn.com</td></tr>
-  <tr><td>X</td><td>x.com</td><td><span id="current-nitter">nitter.net</span> (customizable via ⚙ in popup)</td></tr>
+  <tr><td>Instagram</td><td>instagram.com</td><td><span id="current-kitty">kittygram.irelephant.net</span> (customizable via ⚙ in popup)</td></tr>
+  <tr><td>X</td><td>x.com</td><td><span id="current-nitter">shitter.thepixora.com</span> (customizable via ⚙ in popup)</td></tr>
   <tr><td>TikTok</td><td>tiktok.com</td><td>exporttok.com</td></tr>
   <tr><td>Threads</td><td>threads.com</td><td>shoelace.mint.lgbt</td></tr>
 </table>
@@ -69,14 +69,16 @@ tr:nth-child(even) { background: #161b22; }
 </ol>
 
 <h2>Bookmarklet</h2>
-<p>Works on any browser (Chromium or Gecko based). Create a new bookmark with the generated URL below. Then visit a supported page (Instagram, X, TikTok, or Threads) and click the bookmark — you'll be automatically redirected to the privacy front-end.</p>
+<p>Works on any browser (Chromium or Gecko based). Create a new bookmark with the generated URL below. Then visit a supported page (Instagram, X, TikTok, or Threads) and click the bookmark — you'll be automatically redirected to the front-end.</p>
 
 <p>
-  <label for="nitter-input">Nitter Instance:</label>
+  <label for="nitter-input">X instance:</label>
+  <input id="nitter-input" type="text" placeholder="shitter.thepixora.com" style="padding:4px 8px;border-radius:4px;background:#21262d;color:#c9d1d9;border:1px solid #30363d;font-size:14px;width:210px;">
   &nbsp;
-  <input id="nitter-input" type="text" placeholder="nitter.net" style="padding:4px 8px;border-radius:4px;background:#21262d;color:#c9d1d9;border:1px solid #30363d;font-size:14px;width:200px;">
-  <a href="https://status.d420.de/" target="_blank" style="font-size:12px;margin-left:8px;">Instance list</a>
+  <label for="kitty-input">Instagram instance:</label>
+  <input id="kitty-input" type="text" placeholder="kittygram.irelephant.net" style="padding:4px 8px;border-radius:4px;background:#21262d;color:#c9d1d9;border:1px solid #30363d;font-size:14px;width:230px;">
 </p>
+<p style="font-size:12px;">Instance lists: <a href="https://codeberg.org/shitter/shitter/wiki/Instances" target="_blank" title="shitter (X) instances">1</a> <a href="https://status.d420.de/" target="_blank" title="Nitter uptime status">2</a> <a href="https://codeberg.org/irelephant/kittygram#instances" target="_blank" title="kittygram (Instagram) instances">3</a></p>
 <div class="pre-wrapper"><button class="copy-btn" id="bm-copy-btn">Copy</button>
 <pre style="word-break:break-all" id="bm-pre"></pre></div>
 
@@ -101,19 +103,57 @@ tr:nth-child(even) { background: #161b22; }
 <p>MIT</p>
 
 <script>
-function buildBookmarklet(nitter) {
-  var bm = "(function(){var u=new URL(window.location.href),h=u.hostname,p=u.pathname,s=u.searchParams,m;if(h.indexOf('instagram.com')>=0){if(p.indexOf('/accounts/login')>=0){var n=s.get('next');if(n){var pt=n.indexOf('http')===0?new URL(n).pathname:n.split('?')[0];var al=['/explore','/direct','/accounts','/about','/hacked','/privacy','/popular'];if(!al.some(function(x){return pt.indexOf(x)===0})){if(m=pt.match(/\\/(?:p|reels?)\\/([^/]+)/)){window.location.href='https://imginn.com/p/'+m[1]+'/';return}if(m=pt.match(/\\/([^/]+)\\/reels?/)){window.location.href='https://imginn.com/reels/'+m[1]+'/';return}if(m=pt.match(/\\/([^/]+)\\/tagged/)){window.location.href='https://imginn.com/tagged/'+m[1]+'/';return}if(m=pt.match(/\\/stories\\/([^/]+)/)){window.location.href='https://imginn.com/stories/'+m[1]+'/';return}if(m=pt.match(/\\/([^/?%23]+)/)){window.location.href='https://imginn.com/'+m[1]+'/';return}}}return}var a=['/explore','/direct','/accounts','/about','/hacked','/privacy','/popular'];if(a.some(function(x){return p.indexOf(x)===0}))return;if(p==='/'||p===''){window.location.href='https://imginn.com/';return;}if(m=p.match(/\\/(?:p|reels?)\\/([^/]+)/)){window.location.href='https://imginn.com/p/'+m[1]+'/'}else if(m=p.match(/\\/([^/]+)\\/reels?/)){window.location.href='https://imginn.com/reels/'+m[1]+'/'}else if(m=p.match(/\\/([^/]+)\\/tagged/)){window.location.href='https://imginn.com/tagged/'+m[1]+'/'}else if(m=p.match(/\\/stories\\/([^/]+)/)){window.location.href='https://imginn.com/stories/'+m[1]+'/'}else if(m=p.match(/\\/([^/?%23]+)/)){window.location.href='https://imginn.com/'+m[1]+'/';}}else if(h.indexOf('x.com')>=0){if(p.indexOf('/i/jf/onboarding')>=0||p.indexOf('/i/flow')>=0){var r=s.get('redirect_after_login');if(r){var d=decodeURIComponent(r),ht=d.match(/^\\/hashtag\\/([^/?#]+)/);if(ht){window.location.href='https://NITTER/search?q=%23'+encodeURIComponent(ht[1]);return}var t='https://x.com'+d;m=t.match(/\\/hashtag\\/([^/?#]+)/);if(m){window.location.href='https://NITTER/search?f=tweets&q=%23'+encodeURIComponent(m[1]);return}m=t.match(/(\\/.*)/);if(m){window.location.href='https://NITTER'+m[1];return}return}return}if(m=p.match(/\\/hashtag\\/([^/?#]+)/)){window.location.href='https://NITTER/search?f=tweets&q=%23'+encodeURIComponent(m[1])}else{window.location.href='https://NITTER'+p+s}}else if(h.indexOf('tiktok.com')>=0){if(m=p.match(/\\/@([^/]+)\\/(?:video|photo)\\/([0-9]+)/)){window.location.href='https://exporttok.com/tiktok/account/viewer/@'+m[1]+'/'+m[2]}else if(m=p.match(/\\/@([^/]+)/)){window.location.href='https://exporttok.com/tiktok/account/'+m[1]}}else if(h.indexOf('threads.com')>=0){if(m=p.match(/\\/@[^/]+\\/post\\/([^/]+)/)){window.location.href='https://shoelace.mint.lgbt/t/'+m[1]}else if(m=p.match(/\\/@([^/?#]+)/)){window.location.href='https://shoelace.mint.lgbt/@'+m[1]}}})()";
-  return 'javascript:' + encodeURIComponent(bm.replace(/NITTER/g, nitter));
+var DEFAULTS = { nitter: 'shitter.thepixora.com', kitty: 'kittygram.irelephant.net' };
+
+// Standalone copy of the extension's routing, used to build the bookmarklet.
+function bookmarkletCode(nitter, kitty) {
+  return [
+    '(function(){',
+    'var K="https://' + kitty + '",N="https://' + nitter + '",',
+    'u=new URL(location.href),h=u.hostname,p=u.pathname,q=u.search,s=u.searchParams,',
+    'AL=["/explore","/direct","/accounts","/about","/hacked","/privacy","/popular"];',
+    'function al(x){return AL.some(function(a){return x===a||x.indexOf(a+"/")===0})}',
+    'function go(t){location.href=t}',
+    'if(/(^|\\.)instagram\\.com$/.test(h)){',
+    'var np=p;',
+    'if(p.indexOf("/accounts/login")===0){var n=s.get("next");if(!n)return;',
+    'np=n.indexOf("http")===0?new URL(n).pathname+new URL(n).search:n}',
+    'if(al(np.split("?")[0]))return;go(K+np);return}',
+    'if(/(^|\\.)x\\.com$/.test(h)){',
+    'if(/^\\/i\\/(jf\\/onboarding|flow)/.test(p))return;',
+    'var hm=p.match(/^\\/hashtag\\/([^/?#]+)/);',
+    'if(hm){go(N+"/search?f=tweets&q=%23"+hm[1]);return}',
+    'go(N+p+q);return}',
+    'if(/(^|\\.)tiktok\\.com$/.test(h)){',
+    'var v=p.match(/^\\/@([^/]+)\\/(?:video|photo)\\/([0-9]+)/);',
+    'if(v){go("https://exporttok.com/tiktok/account/viewer/@"+v[1]+"/"+v[2]);return}',
+    'var ta=p.match(/^\\/@([^/]+)/);',
+    'if(ta){go("https://exporttok.com/tiktok/account/"+ta[1]);return}return}',
+    'if(/(^|\\.)threads\\.com$/.test(h)){',
+    'var tp=p.match(/^\\/@[^/]+\\/post\\/([^/]+)/);',
+    'if(tp){go("https://shoelace.mint.lgbt/t/"+tp[1]);return}',
+    'if(/^\\/(login|search|explore|activity|settings|api|share)/.test(p))return;',
+    'var th=p.match(/^\\/@([^/?#]+)/);',
+    'if(th){go("https://shoelace.mint.lgbt/@"+th[1]);return}}',
+    '})();',
+  ].join('');
+}
+
+function hostOnly(value, fallback) {
+  var s = String(value || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').split(/[/?#]/)[0];
+  return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(s) ? s : fallback;
 }
 
 function updateBookmarklet() {
-  var input = document.getElementById('nitter-input');
-  var nitter = input.value.trim() || 'nitter.net';
-  var bm = buildBookmarklet(nitter);
-  document.getElementById('bm-pre').textContent = bm;
-  document.getElementById('current-nitter').textContent = nitter || 'nitter.net';
+  var nitter = hostOnly(document.getElementById('nitter-input').value, DEFAULTS.nitter);
+  var kitty = hostOnly(document.getElementById('kitty-input').value, DEFAULTS.kitty);
+  document.getElementById('bm-pre').textContent =
+    'javascript:' + encodeURIComponent(bookmarkletCode(nitter, kitty));
+  document.getElementById('current-nitter').textContent = nitter;
+  document.getElementById('current-kitty').textContent = kitty;
 }
 document.getElementById('nitter-input').addEventListener('input', updateBookmarklet);
+document.getElementById('kitty-input').addEventListener('input', updateBookmarklet);
 
 document.querySelectorAll('.pre-wrapper').forEach(function(wrapper) {
   var btn = wrapper.querySelector('.copy-btn');

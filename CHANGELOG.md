@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2] - 2026-10-27
+
+### Changed
+- Instagram now redirects to **kittygram** instead of imginn. kittygram mirrors Instagram paths 1:1, so one host-swap rule replaces the six imginn-specific path rules (profiles, posts, reels, stories, tagged, root)
+- X now redirects to **shitter**, the maintained Nitter fork (default `shitter.thepixora.com`)
+- Both Instagram and X front-end instances are now configurable from the popup ⚙ (Instagram gets its own gear)
+- Instance list links in the popup and landing page are shown as `1` / `2` instead of full URLs
+- Popup subtitle reads "Alternative frontends, no login needed."
+- `host_permissions` / `content_scripts` swap `imginn.com` for the default kittygram and shitter hosts
+
+### Added
+- Per-platform instance config (`nitter_instance`, `kittygram_instance`) with host normalization — pasting a full URL works
+- `forwardRules()` is built per call, so a new instance updates forward rules, reverse rules and the tab redirect together
+- Landing page bookmarklet takes both instances and is generated from the same routing as the extension
+
+### Removed
+- `imginn.com` support, the imginn path-mapping rules and their reverse counterparts
+
 ## [1.1] - 2026-08-04
 
 ### Fixed

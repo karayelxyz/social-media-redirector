@@ -7,12 +7,19 @@ const STORAGE_KEYS = {
   threads:   'redirect_threads',
 };
 
-const DEFAULT_NITTER = 'nitter.net';
-let currentNitter = DEFAULT_NITTER;
+const DEFAULT_INSTANCES = {
+  x:         'shitter.thepixora.com',
+  instagram: 'kittygram.irelephant.net',
+};
+
+// Instance host per platform, mirrored from storage so DNR rules and URL
+// building always agree with what the popup saved.
+const INSTANCE_KEYS = { x: 'nitter_instance', instagram: 'kittygram_instance' };
+const instances = { ...DEFAULT_INSTANCES };
 
 const DOMAINS = {
-  instagram: { originals: ['instagram.com'], proxies: ['imginn.com'] },
-  x:         { originals: ['x.com'],          get proxies() { return [currentNitter]; } },
+  instagram: { originals: ['instagram.com'], get proxies() { return [instances.instagram]; } },
+  x:         { originals: ['x.com'],          get proxies() { return [instances.x]; } },
   tiktok:    { originals: ['tiktok.com'],     proxies: ['exporttok.com'] },
   threads:   { originals: ['threads.com'],    proxies: ['shoelace.mint.lgbt'] },
 };
@@ -21,14 +28,25 @@ function hostOf(url) {
   try { return new URL(url).hostname; } catch (e) { return ''; }
 }
 
-async function getNitterInstance() {
-  const s = await W.storage.local.get('nitter_instance');
-  return s.nitter_instance || DEFAULT_NITTER;
+// The popup takes a pasted URL as often as a bare host; keep only the host.
+function normHost(value, fallback) {
+  const s = String(value || '').trim().toLowerCase()
+    .replace(/^[a-z]+:\/\//, '')
+    .split(/[/?#]/)[0];
+  return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(s) ? s : fallback;
 }
 
-async function setNitterInstance(domain) {
-  currentNitter = domain;
-  await W.storage.local.set({ nitter_instance: domain });
+function loadInstances(stored) {
+  for (const platform of Object.keys(INSTANCE_KEYS)) {
+    instances[platform] = normHost(stored[INSTANCE_KEYS[platform]], DEFAULT_INSTANCES[platform]);
+  }
+}
+
+async function setInstance(platform, domain) {
+  const key = INSTANCE_KEYS[platform];
+  if (!key) return;
+  instances[platform] = normHost(domain, DEFAULT_INSTANCES[platform]);
+  await W.storage.local.set({ [key]: instances[platform] });
   await applyRules();
 }
 
@@ -36,47 +54,42 @@ function hostMatches(host, domain) {
   return host === domain || host.endsWith('.' + domain);
 }
 
-const FORWARD = [
-  { platforms: ['instagram'], priority: 10,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/(?:[^/]+/)?(?:p|reels?)/([^/]+)(?:/.*)?$',
-    to:   'https://imginn.com/p/\\1/' },
-  { platforms: ['instagram'], priority: 9,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/([^/]+)/reels?(?:/.*)?$',
-    to:   'https://imginn.com/reels/\\1/' },
-  { platforms: ['instagram'], priority: 9,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/stories/([^/]+)(?:/.*)?$',
-    to:   'https://imginn.com/stories/\\1/' },
-  { platforms: ['instagram'], priority: 9,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/([^/]+)/tagged(?:/.*)?$',
-    to:   'https://imginn.com/tagged/\\1/' },
-  { platforms: ['instagram'], priority: 10, allow: true,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/(?:explore|direct|accounts|about|hacked|privacy|popular)(?:/|$)' },
-  { platforms: ['instagram'], priority: 9,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com/?$',
-    to:   'https://imginn.com/' },
-  { platforms: ['instagram'], priority: 8,
-    from: '^https://(?:[^/.]+\\.)?instagram\\.com(?:/([^/?#]+)(?:/.*)?)?/?$',
-    to:   'https://imginn.com/\\1/' },
+// Forward rules: original -> frontend. Instagram and X targets follow the
+// instance saved in the popup, so they are built per call.
+function forwardRules() {
+  return [
+    { platforms: ['instagram'], priority: 10, allow: true,
+      from: '^https://(?:[^/.]+\\.)?instagram\\.com/(?:explore|direct|accounts|about|hacked|privacy|popular)(?:/|$)' },
+    { platforms: ['instagram'], priority: 9,
+      from: '^https://(?:[^/.]+\\.)?instagram\\.com(?:/(.*))?$',
+      to:   `https://${instances.instagram}/\\1` },
 
-  { platforms: ['x'], priority: 10, allow: true,
-    from: '^https://(?:www\\.)?x\\.com/i/(?:jf/onboarding|flow)(?:/|$)' },
+    { platforms: ['x'], priority: 11,
+      from: '^https://(?:www\\.)?x\\.com/hashtag/([^/?#]+)(?:/.*)?$',
+      to:   `https://${instances.x}/search?f=tweets&q=%23\\1` },
+    { platforms: ['x'], priority: 10, allow: true,
+      from: '^https://(?:www\\.)?x\\.com/i/(?:jf/onboarding|flow)(?:/|$)' },
+    { platforms: ['x'], priority: 9,
+      from: '^https://(?:www\\.)?x\\.com(?:/(.*))?$',
+      to:   `https://${instances.x}/\\1` },
 
-  { platforms: ['tiktok'], priority: 10,
-    from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)/(?:video|photo)/([0-9]+)(?:[/?#].*)?$',
-    to:   'https://exporttok.com/tiktok/account/viewer/@\\1/\\2' },
-  { platforms: ['tiktok'], priority: 9,
-    from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)(?:/.*)?$',
-    to:   'https://exporttok.com/tiktok/account/\\1' },
+    { platforms: ['tiktok'], priority: 10,
+      from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)/(?:video|photo)/([0-9]+)(?:[/?#].*)?$',
+      to:   'https://exporttok.com/tiktok/account/viewer/@\\1/\\2' },
+    { platforms: ['tiktok'], priority: 9,
+      from: '^https://(?:[\\w-]+\\.)?tiktok\\.com/@([^/]+)(?:/.*)?$',
+      to:   'https://exporttok.com/tiktok/account/\\1' },
 
-  { platforms: ['threads'], priority: 10,
-    from: '^https://(?:www\\.)?threads\\.com/@[^/]+/post/([^/]+)(?:/.*)?$',
-    to:   'https://shoelace.mint.lgbt/t/\\1' },
-  { platforms: ['threads'], priority: 10, allow: true,
-    from: '^https://(?:www\\.)?threads\\.com/(?:login|search|explore|activity|settings|api|share)(?:/|$)' },
-  { platforms: ['threads'], priority: 9,
-    from: '^https://(?:www\\.)?threads\\.com/@([^/?#]+)/?$',
-    to:   'https://shoelace.mint.lgbt/@\\1' },
-];
+    { platforms: ['threads'], priority: 10,
+      from: '^https://(?:www\\.)?threads\\.com/@[^/]+/post/([^/]+)(?:/.*)?$',
+      to:   'https://shoelace.mint.lgbt/t/\\1' },
+    { platforms: ['threads'], priority: 10, allow: true,
+      from: '^https://(?:www\\.)?threads\\.com/(?:login|search|explore|activity|settings|api|share)(?:/|$)' },
+    { platforms: ['threads'], priority: 9,
+      from: '^https://(?:www\\.)?threads\\.com/@([^/?#]+)/?$',
+      to:   'https://shoelace.mint.lgbt/@\\1' },
+  ];
+}
 
 function dnrRule(def, id) {
   return {
@@ -101,12 +114,7 @@ function reverseDnrRules(platform) {
   for (const proxy of DOMAINS[platform].proxies) {
     const p = esc(proxy);
     if (platform === 'instagram') {
-      rules.push(redir(`^https://${p}/p/([^/?#]+)(?:/.*)?$`, 'https://www.instagram.com/p/\\1/'));
-      rules.push(redir(`^https://${p}/stories/([^/?#]+)(?:/.*)?$`, 'https://www.instagram.com/stories/\\1/'));
-      rules.push(redir(`^https://${p}/reels/([^/?#]+)(?:/.*)?$`, 'https://www.instagram.com/\\1/reels/'));
-      rules.push(redir(`^https://${p}/tagged/([^/?#]+)(?:/.*)?$`, 'https://www.instagram.com/\\1/tagged/'));
-      rules.push(redir(`^https://${p}/([^/?#]+)(?:/.*)?$`, 'https://www.instagram.com/\\1/'));
-      rules.push(redir(`^https://${p}/?$`, 'https://www.instagram.com'));
+      rules.push(redir(`^https://${p}(?:/(.*))?$`, 'https://www.instagram.com/\\1'));
     } else if (platform === 'x') {
       rules.push(redir(`^https://${p}(/[^/?#]+)([?#].*)?$`, 'https://x.com\\1\\2'));
       rules.push(redir(`^https://${p}/?$`, 'https://x.com'));
@@ -128,9 +136,9 @@ let rulesQueue = Promise.resolve();
 // Serialize DNR rule updates so concurrent toggles never interleave.
 function applyRules() {
   rulesQueue = rulesQueue.then(async () => {
-    const keys = [...Object.values(STORAGE_KEYS), 'nitter_instance'];
+    const keys = [...Object.values(STORAGE_KEYS), ...Object.values(INSTANCE_KEYS)];
     const t = await W.storage.local.get(keys);
-    currentNitter = t.nitter_instance || DEFAULT_NITTER;
+    loadInstances(t);
     await syncDynamicRules(t);
   }).catch(err => {
     console.error('DNR sync failed:', err);
@@ -140,21 +148,10 @@ function applyRules() {
 
 async function syncDynamicRules(t) {
   const rules = [];
-  for (const def of FORWARD) {
+  for (const def of forwardRules()) {
     if (def.platforms.some(p => t[STORAGE_KEYS[p]] !== false)) {
       rules.push(dnrRule(def, rules.length + 1));
     }
-  }
-  if (t[STORAGE_KEYS.x] !== false) {
-    rules.push({ id: rules.length + 1, priority: 11,
-      action: { type: 'redirect', redirect: { regexSubstitution: `https://${currentNitter}/search?f=tweets&q=%23\\1` } },
-      condition: { regexFilter: '^https://(?:www\\.)?x\\.com/hashtag/([^/?#]+)(?:/.*)?$', resourceTypes: ['main_frame', 'sub_frame'] } });
-    rules.push({ id: rules.length + 1, priority: 10,
-      action: { type: 'allow' },
-      condition: { regexFilter: '^https://(?:www\\.)?x\\.com/i/(?:jf/onboarding|flow)(?:/|$)', resourceTypes: ['main_frame', 'sub_frame'] } });
-    rules.push({ id: rules.length + 1, priority: 10,
-      action: { type: 'redirect', redirect: { regexSubstitution: `https://${currentNitter}/\\1` } },
-      condition: { regexFilter: '^https://(?:www\\.)?x\\.com/(.*)', resourceTypes: ['main_frame', 'sub_frame'] } });
   }
   for (const platform of Object.keys(DOMAINS)) {
     if (t[STORAGE_KEYS[platform]] !== false) continue;
@@ -179,10 +176,7 @@ async function syncDynamicRules(t) {
 // Sync DNR rules on every service worker start.
 applyRules();
 W.runtime.onInstalled.addListener(applyRules);
-W.runtime.onStartup.addListener(async () => {
-  currentNitter = await getNitterInstance();
-  await applyRules();
-});
+W.runtime.onStartup.addListener(applyRules);
 
 // storage.onChanged is the single driver of onToggle: the popup writes to
 // storage and also sends a 'toggle' message as a wake-up, but the message
@@ -212,13 +206,18 @@ W.storage.onChanged.addListener((changes, area) => {
 
 W.runtime.onMessage.addListener((msg, sender) => {
   if (!msg || !sender || sender.id !== W.runtime.id) return;
-  if (msg.type === 'set-nitter-instance') {
+  if (msg.type === 'set-instance') {
     if (sender.tab) return;
-    setNitterInstance(msg.domain);
+    setInstance(msg.platform, msg.domain);
     return;
   }
-  if (msg.type === 'get-nitter-instance') {
-    return Promise.resolve({ domain: currentNitter });
+  if (msg.type === 'get-instances') {
+    // Read through storage: the popup may wake a worker that has not run
+    // applyRules() yet.
+    return W.storage.local.get(Object.values(INSTANCE_KEYS)).then(t => {
+      loadInstances(t);
+      return { ...instances };
+    });
   }
   if (msg.type === 'toggle') {
     // Only extension pages (the popup) may toggle; never content scripts.
@@ -249,14 +248,7 @@ W.runtime.onMessage.addListener((msg, sender) => {
 function forwardUrl(url) {
   let u;
   try { u = new URL(url); } catch (e) { return null; }
-  if (DOMAINS.x.originals.some(h => hostMatches(u.hostname, h))) {
-    const isLogin = /^\/i\/(?:jf\/onboarding|flow)(?:\/|$)/.test(u.pathname);
-    if (isLogin) return null;
-    const m = url.match(/^https:\/\/(?:www\.)?x\.com\/hashtag\/([^/?#]+)/);
-    if (m) return `https://${currentNitter}/search?f=tweets&q=%23${m[1]}`;
-    return url.replace(/^https:\/\/(?:www\.)?x\.com/, `https://${currentNitter}`);
-  }
-  for (const def of FORWARD) {
+  for (const def of forwardRules()) {
     if (!def.platforms.some(p => DOMAINS[p].originals.some(h => hostMatches(u.hostname, h)))) continue;
     const m = url.match(def.from);
     if (!m) continue;
@@ -285,10 +277,10 @@ async function checkLoginRedirect(url, host) {
       const hashMatch = decoded.match(/^\/hashtag\/([^/?#]+)/);
       let dest;
       if (hashMatch) {
-        dest = `https://${currentNitter}/search?q=%23${encodeURIComponent(hashMatch[1])}`;
+        dest = `https://${instances.x}/search?q=%23${encodeURIComponent(hashMatch[1])}`;
       } else {
         const targetUrl = `https://x.com${decoded}`;
-        dest = forwardUrl(targetUrl) || `https://${currentNitter}${decoded}`;
+        dest = forwardUrl(targetUrl) || `https://${instances.x}${decoded}`;
       }
       return { platform: 'x', dest };
     }
@@ -323,15 +315,7 @@ async function checkLoginRedirect(url, host) {
 
 function reverseUrl(platform, proxyUrl) {
   const u = new URL(proxyUrl);
-  if (platform === 'instagram') {
-    let m;
-    if (m = u.pathname.match(/^\/p\/([^/]+)/)) return `https://www.instagram.com/p/${m[1]}/`;
-    if (m = u.pathname.match(/^\/stories\/([^/]+)/)) return `https://www.instagram.com/stories/${m[1]}/`;
-    if (m = u.pathname.match(/^\/tagged\/([^/]+)/)) return `https://www.instagram.com/${m[1]}/tagged/`;
-    if (m = u.pathname.match(/^\/reels\/([^/]+)/)) return `https://www.instagram.com/${m[1]}/reels/`;
-    if (m = u.pathname.match(/^\/([^/?#]+)/)) return `https://www.instagram.com/${m[1]}/`;
-    return 'https://www.instagram.com';
-  }
+  if (platform === 'instagram') return 'https://www.instagram.com' + u.pathname + u.search;
   if (platform === 'x') {
     if (u.pathname === '/search') {
       const q = u.searchParams.get('q');
@@ -409,7 +393,7 @@ W.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (details.frameId !== 0) return;
   const host = hostOf(details.url);
   if (!host) return;
-  if (host !== currentNitter && host !== 'www.' + currentNitter) return;
+  if (host !== instances.x && host !== 'www.' + instances.x) return;
   const t = await W.storage.local.get(STORAGE_KEYS.x);
   if (t[STORAGE_KEYS.x] !== false) return;
   const dest = reverseUrl('x', details.url);
