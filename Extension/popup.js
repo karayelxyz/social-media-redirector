@@ -8,7 +8,7 @@ const SERVICES = [
 ];
 
 // Platforms whose front-end instance can be swapped from the popup gear.
-// Links are shown as numbers to keep the footer of the panel short.
+// Each link is rendered as a chip; the URL itself stays in the tooltip.
 const INSTANCE_INFO = {
   x: {
     placeholder: 'shitter.thepixora.com',
@@ -20,7 +20,7 @@ const INSTANCE_INFO = {
   instagram: {
     placeholder: 'kittygram.irelephant.net',
     links: [
-      ['1', 'https://codeberg.org/irelephant/kittygram#instances'],
+      ['official repository', 'https://codeberg.org/irelephant/kittygram#instances'],
     ],
   },
 };
@@ -56,6 +56,7 @@ function createSettingsPanel(platform) {
     const a = document.createElement('a');
     a.href = href;
     a.target = '_blank';
+    a.title = href;
     a.textContent = label;
     hint.appendChild(a);
   });
