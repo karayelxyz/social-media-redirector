@@ -262,11 +262,19 @@
 
   <section>
     <h2>Install</h2>
-    <p class="lede">Download the latest release from <a href="https://github.com/karayelxyz/social-media-redirector/releases">GitHub releases</a>, then:</p>
+    <p class="lede">Every release on <a href="https://github.com/karayelxyz/social-media-redirector/releases">GitHub</a> ships a Chrome/Edge build and a Firefox build. Pick the one for your browser:</p>
     <ol>
-      <li><strong>Chrome / Edge:</strong> open <code>chrome://extensions/</code> (<code>edge://extensions/</code>), enable <strong>Developer mode</strong>, click <strong>Load unpacked</strong> and pick the extension folder.</li>
-      <li><strong>Firefox:</strong> open <code>about:addons</code>, click the gear icon &rarr; <strong>Install Add-on From File</strong> and pick the signed <code>.xpi</code>.</li>
+      <li>
+        <strong>Chrome / Edge — unpacked folder.</strong> Unzip the build, open <code>chrome://extensions</code> (<code>edge://extensions</code> on Edge), switch on <strong>Developer mode</strong>, click <strong>Load unpacked</strong> and choose the unzipped folder.
+      </li>
+      <li>
+        <strong>Chrome / Edge — <code>.crx</code>.</strong> Drag the <code>.crx</code> onto that same page. Chrome only accepts a CRX it trusts, so a self-built file is normally refused with <code>CRX_REQUIRED_PROOF_MISSING</code>; it installs where off-store extensions are allowed by policy, or straight from the Web Store.
+      </li>
+      <li>
+        <strong>Firefox — <code>.xpi</code>.</strong> Open <code>about:addons</code>, click the gear icon &rarr; <strong>Install Add-on From File</strong>, choose the signed <code>.xpi</code>. An unsigned build loads temporarily from <code>about:debugging</code> &rarr; <strong>This Firefox</strong> &rarr; <strong>Load Temporary Add-on</strong>.
+      </li>
     </ol>
+    <p class="note">Manual installs stay in place but do not update themselves — repeat these steps with the next release.</p>
   </section>
 
   <section>
