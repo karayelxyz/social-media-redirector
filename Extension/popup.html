@@ -127,6 +127,11 @@
     .inst-opt:hover { border-color: #58a6ff; }
     .inst-opt.active { border-color: var(--on); color: var(--on); font-weight: 600; }
     .inst-opt[disabled] { opacity: 0.6; cursor: default; }
+    .inst-opt.saved {
+      background: #2ea043; border-color: #2ea043; color: #fff;
+      font-weight: 600; transition: background 0.2s, border-color 0.2s;
+    }
+    .inst-opt.saved[disabled] { opacity: 1; }
     @media (pointer: coarse) {
       body {
         width: 100vw;

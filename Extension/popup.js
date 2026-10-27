@@ -84,11 +84,12 @@ function createSettingsPanel(platform) {
     hint.appendChild(oErr);
 
     for (const domain of info.options) {
+      const label = domain.replace(/^www\./, '');
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'inst-opt';
       b.dataset.domain = domain;
-      b.textContent = domain.replace(/^www\./, '');
+      b.textContent = label;
       b.title = domain;
       b.addEventListener('click', async () => {
         oErr.textContent = '';
@@ -105,7 +106,19 @@ function createSettingsPanel(platform) {
         opts.querySelectorAll('.inst-opt').forEach(x => {
           x.classList.toggle('active', x === b);
         });
-        setTimeout(() => panel.classList.remove('open'), 900);
+        // Same tick as the Save button; pin the width first so swapping the
+        // label to ✓ cannot resize the row.
+        b.style.minWidth = b.offsetWidth + 'px';
+        b.textContent = '✓';
+        b.classList.add('saved');
+        b.setAttribute('aria-label', 'Selected');
+        setTimeout(() => {
+          b.textContent = label;
+          b.classList.remove('saved');
+          b.style.minWidth = '';
+          b.removeAttribute('aria-label');
+          panel.classList.remove('open');
+        }, 900);
       });
       opts.appendChild(b);
     }
