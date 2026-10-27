@@ -18,10 +18,10 @@ const INSTANCE_KEYS = { x: 'nitter_instance', instagram: 'kittygram_instance' };
 const instances = { ...DEFAULT_INSTANCES };
 
 const DOMAINS = {
-  instagram: { originals: ['instagram.com'], get proxies() { return [instances.instagram]; } },
-  x:         { originals: ['x.com'],          get proxies() { return [instances.x]; } },
-  tiktok:    { originals: ['tiktok.com'],     proxies: ['exporttok.com'] },
-  threads:   { originals: ['threads.com'],    proxies: ['shoelace.mint.lgbt'] },
+  instagram: { originals: ['instagram.com'] },
+  x:         { originals: ['x.com'] },
+  tiktok:    { originals: ['tiktok.com'] },
+  threads:   { originals: ['threads.com'] },
 };
 
 function hostOf(url) {
@@ -102,35 +102,6 @@ function dnrRule(def, id) {
   };
 }
 
-// Reverse rules: proxy -> original, used when a platform is OFF.
-function reverseDnrRules(platform) {
-  const esc = s => s.replace(/\./g, '\\.');
-  const redir = (from, to) => ({
-    priority: 100,
-    action: { type: 'redirect', redirect: { regexSubstitution: to } },
-    condition: { regexFilter: from, resourceTypes: ['main_frame', 'sub_frame'] },
-  });
-  const rules = [];
-  for (const proxy of DOMAINS[platform].proxies) {
-    const p = esc(proxy);
-    if (platform === 'instagram') {
-      rules.push(redir(`^https://${p}(?:/(.*))?$`, 'https://www.instagram.com/\\1'));
-    } else if (platform === 'x') {
-      rules.push(redir(`^https://${p}(/[^/?#]+)([?#].*)?$`, 'https://x.com\\1\\2'));
-      rules.push(redir(`^https://${p}/?$`, 'https://x.com'));
-    } else if (platform === 'tiktok') {
-      rules.push(redir(`^https://${p}/tiktok/account/viewer/@([^/]+)/([0-9]+)(?:[/?#].*)?$`, 'https://www.tiktok.com/@\\1/video/\\2'));
-      rules.push(redir(`^https://${p}/tiktok/account/@{0,1}([^/?#]+)`, 'https://www.tiktok.com/@\\1'));
-      rules.push(redir(`^https://${p}/?$`, 'https://www.tiktok.com'));
-    } else if (platform === 'threads') {
-      rules.push(redir(`^https://${p}/t/([^/?#]+)(?:/.*)?$`, 'https://www.threads.com/@?/post/\\1'));
-      rules.push(redir(`^https://${p}/@([^/?#]+)(?:/.*)?$`, 'https://www.threads.com/@\\1'));
-      rules.push(redir(`^https://${p}/?$`, 'https://www.threads.com'));
-    }
-  }
-  return rules;
-}
-
 let rulesQueue = Promise.resolve();
 
 // Serialize DNR rule updates so concurrent toggles never interleave.
@@ -153,13 +124,6 @@ async function syncDynamicRules(t) {
       rules.push(dnrRule(def, rules.length + 1));
     }
   }
-  for (const platform of Object.keys(DOMAINS)) {
-    if (t[STORAGE_KEYS[platform]] !== false) continue;
-    for (const r of reverseDnrRules(platform)) {
-      rules.push({ id: rules.length + 1, priority: r.priority, action: r.action, condition: r.condition });
-    }
-  }
-
   const expected = rules.map(r => r.id).sort();
   const existing = await W.declarativeNetRequest.getDynamicRules();
 
@@ -184,7 +148,9 @@ W.runtime.onStartup.addListener(applyRules);
 // exactly once, after the value is committed.
 async function onToggle(key, newValue) {
   await applyRules();
-  await redirectCurrentTab(key.replace('redirect_', ''), newValue !== false);
+  // OFF means off: no reverse rules, no navigation of the current tab.
+  if (newValue === false) return;
+  await redirectCurrentTab(key.replace('redirect_', ''));
 }
 
 const hitWaiters = new Map(); // nonce -> resolve
@@ -313,33 +279,7 @@ async function checkLoginRedirect(url, host) {
   return null;
 }
 
-function reverseUrl(platform, proxyUrl) {
-  const u = new URL(proxyUrl);
-  if (platform === 'instagram') return 'https://www.instagram.com' + u.pathname + u.search;
-  if (platform === 'x') {
-    if (u.pathname === '/search') {
-      const q = u.searchParams.get('q');
-      if (q && q.startsWith('#')) return 'https://x.com/hashtag/' + encodeURIComponent(q.slice(1));
-    }
-    return 'https://x.com' + u.pathname + u.search;
-  }
-  if (platform === 'tiktok') {
-    const viewer = u.pathname.match(/\/viewer\/@([^/]+)\/(\d+)/);
-    if (viewer) return `https://www.tiktok.com/@${viewer[1]}/video/${viewer[2]}`;
-    const account = u.pathname.match(/\/account\/(@?[^/]+)/);
-    if (account) return `https://www.tiktok.com/@${account[1].replace(/^@/, '')}`;
-    return 'https://www.tiktok.com';
-  }
-  if (platform === 'threads') {
-    let m;
-    if (m = u.pathname.match(/^\/t\/([^/]+)/)) return `https://www.threads.com/@?/post/${m[1]}`;
-    if (m = u.pathname.match(/^\/@([^/?#]+)/)) return `https://www.threads.com/@${m[1]}`;
-    return 'https://www.threads.com';
-  }
-  return null;
-}
-
-// Toggle flipped: redirect the affected tab right away so the user does
+// Toggle flipped on: redirect the affected tab right away so the user does
 // not have to reload. lastTabs lives in storage.session so it survives
 // service-worker suspend (Chrome MV3).
 let lastTabs = null; // lazy-loaded cache; null = not read from session yet
@@ -360,7 +300,7 @@ W.webNavigation.onCommitted.addListener((details) => {
   if (!host) return;
   for (const platform of Object.keys(DOMAINS)) {
     const d = DOMAINS[platform];
-    if (d.originals.some(h => hostMatches(host, h)) || d.proxies.some(h => hostMatches(host, h))) {
+    if (d.originals.some(h => hostMatches(host, h))) {
       getLastTabs().then(lt => {
         lt[details.tabId] = { url, t: Date.now() };
         const ids = Object.keys(lt);
@@ -389,18 +329,6 @@ W.tabs.onRemoved.addListener((tabId) => {
   W.storage.session.set({ lastTabs }).catch(() => {});
 });
 
-W.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  if (details.frameId !== 0) return;
-  const host = hostOf(details.url);
-  if (!host) return;
-  if (host !== instances.x && host !== 'www.' + instances.x) return;
-  const t = await W.storage.local.get(STORAGE_KEYS.x);
-  if (t[STORAGE_KEYS.x] !== false) return;
-  const dest = reverseUrl('x', details.url);
-  if (!dest || dest === details.url) return;
-  W.tabs.update(details.tabId, { url: dest }).catch(() => {});
-});
-
 // Wait for the content script to echo this toggle's nonce via session
 // navHit; false = channel is dead.
 function hitWait(nonce, ms) {
@@ -418,17 +346,16 @@ function sendMsg(tabId, msg, ms) {
   ]);
 }
 
-async function redirectCurrentTab(platform, on) {
+// Only ever forward: a platform that is turned off leaves the page alone.
+async function redirectCurrentTab(platform) {
   const d = DOMAINS[platform];
   if (!d) return;
   const fits = (url) => {
     if (!url || !url.startsWith('http')) return null;
     const host = hostOf(url);
     if (!host) return null;
-    const isOrig = d.originals.some(h => hostMatches(host, h));
-    const isProxy = d.proxies.some(h => hostMatches(host, h));
-    if ((on && isOrig) || (!on && isProxy)) return on ? forwardUrl(url) : reverseUrl(platform, url);
-    return null;
+    if (!d.originals.some(h => hostMatches(host, h))) return null;
+    return forwardUrl(url);
   };
   // Active tab first; lastTabs is only a fallback (popup on Android often
   // hides the active tab from tabs.query).
@@ -448,7 +375,7 @@ async function redirectCurrentTab(platform, on) {
       if (dest) { best = { tabId: +tabId, url: info.url, dest }; break; }
     }
   }
-  if (!best && on) {
+  if (!best) {
     if (active && typeof active.id === 'number' && active.url) {
       const host = hostOf(active.url);
       if (host) {

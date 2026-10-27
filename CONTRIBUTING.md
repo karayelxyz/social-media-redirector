@@ -26,7 +26,7 @@ node --check Extension/popup.js
 node test/redirect.test.js
 ```
 
-The test suite validates forward + reverse URL mapping round-trips for every platform. Add a case whenever you add or change a URL pattern.
+The test suite validates forward URL mapping for every platform. Add a case whenever you add or change a URL pattern.
 
 ## Pull Requests
 
