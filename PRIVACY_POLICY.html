@@ -26,9 +26,9 @@ tr:nth-child(even) { background: #161b22; }
 <table>
   <tr><th>Permission</th><th>Purpose</th></tr>
   <tr><td><code>declarativeNetRequest</code> / <code>declarativeNetRequestWithHostAccess</code></td><td>Rewrite URLs locally via browser-built-in DNR rules — no network requests are intercepted or inspected by the extension.</td></tr>
-  <tr><td><code>storage</code></td><td>Save your toggle preference (on/off) locally. No data is synced or sent externally.</td></tr>
+  <tr><td><code>storage</code></td><td>Save your per-platform toggles and the front-end instance you picked, locally. No data is synced or sent externally.</td></tr>
   <tr><td><code>tabs</code></td><td>Read active tab URL and perform programmatic navigation (<code>tabs.update</code>, <code>tabs.reload</code>) when toggling redirects on/off.</td></tr>
-  <tr><td><code>webNavigation</code></td><td>Detect Instagram login redirects (<code>?next=</code>), notice when a supported page moves to another URL inside the same tab (so it can be redirected immediately instead of a second later), and remember which tab is on a supported site so turning a toggle on can redirect that tab.</td></tr>
+  <tr><td><code>webNavigation</code></td><td>Detect Instagram and X login redirects (<code>?next=</code>, <code>?redirect_after_login=</code>), notice when a supported page moves to another URL inside the same tab (so it can be redirected immediately instead of a second later), and remember which tab is on a supported site so turning a toggle on can redirect that tab.</td></tr>
 </table>
 
 <h2>What the Extension Does</h2>
@@ -46,7 +46,11 @@ tr:nth-child(even) { background: #161b22; }
   <li><strong>exporttok.com</strong>, <strong>tikvib.com</strong> or <strong>viewtikstories.com</strong> (TikTok alternatives, one selected by you)</li>
   <li><strong>shoelace.mint.lgbt</strong> (Threads alternative)</li>
 </ul>
+<p>X and Instagram can be pointed at a different instance by entering its host in the popup. That hostname is stored locally in your browser and only decides where your requests go for that platform — it is never sent to us.</p>
 <p>These services are operated independently. Please refer to their respective privacy policies for information on how they handle your data.</p>
+
+<h2>Website</h2>
+<p>This landing page is served by GitHub Pages. It runs no analytics or tracking scripts and sets no cookies. One request goes to <code>api.github.com</code> to read the repository's star count, which shares only your IP address with GitHub, as any web request does.</p>
 
 <h2>Changes to This Policy</h2>
 <p>If this policy changes, the "Last updated" date at the top will be revised.</p>
