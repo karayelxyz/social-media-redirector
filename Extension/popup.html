@@ -114,6 +114,17 @@
     .inst-save[disabled] { opacity: 0.8; cursor: default; }
     .inst-save.saved { background: #2ea043; }
     .inst-save.saved[disabled] { opacity: 1; }
+    /* TikTok: a fixed list of front-ends, so pick one with a tap — no text
+       field, which on mobile also pulls up the keyboard. */
+    .inst-opts { display: flex; gap: 6px; margin-bottom: 8px; }
+    .inst-opt {
+      flex: 1 1 0; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 4px;
+      font-size: 11px; font-family: inherit; cursor: pointer;
+    }
+    .inst-opt:hover { border-color: #58a6ff; }
+    .inst-opt.active { border-color: var(--on); color: var(--on); font-weight: 600; }
+    .inst-opt[disabled] { opacity: 0.6; cursor: default; }
     @media (pointer: coarse) {
       body {
         width: 100vw;
