@@ -60,6 +60,25 @@ for (const gone of ['reverseDnrRules', 'reverseUrl', 'onBeforeNavigate']) {
   console.log((ok ? 'OK  ' : 'FAIL'), 'no reverse:', gone);
 }
 
+// The popup validates the host before saving; it must agree with the
+// background's normalization, or a "Saved" toast would hide a silent fallback.
+const popupSrc = fs.readFileSync(path.join(__dirname, '..', 'Extension', 'popup.js'), 'utf8');
+eval(popupSrc.match(/function hostOnly\(value, fallback\) \{[\s\S]*?\n\}/)[0]);
+for (const [raw, exp] of [
+  ['kittygram.irelephant.net', 'kittygram.irelephant.net'],
+  ['https://kg.meowing.de/u?x=1', 'kg.meowing.de'],
+  ['  NITTER.Tiekoetter.COM  ', 'nitter.tiekoetter.com'],
+  ['', null],
+  ['not a host', null],
+  ['http://', null],
+]) {
+  const got = hostOnly(raw, null);
+  const ok = got === exp;
+  if (!ok) fail++;
+  console.log((ok ? 'OK  ' : 'FAIL'), 'popup host', JSON.stringify(raw), '=>', got);
+  if (!ok) console.log('     expected:', exp);
+}
+
 // The landing page bookmarklet routes on its own; keep it in sync.
 const page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 eval(page.match(/function bookmarkletCode\(nitter, kitty\) \{[\s\S]*?\n\}/)[0]);

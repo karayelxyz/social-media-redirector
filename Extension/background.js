@@ -167,15 +167,27 @@ W.storage.onChanged.addListener((changes, area) => {
   if (area !== 'local') return;
   for (const [key, { newValue }] of Object.entries(changes)) {
     if (Object.values(STORAGE_KEYS).includes(key)) onToggle(key, newValue !== false);
+    else if (Object.values(INSTANCE_KEYS).includes(key)) onInstanceChange(key, newValue);
   }
 });
+
+// The popup writes the chosen instance straight to storage, so this keeps the
+// worker's copy and its DNR rules in sync even if its message never arrived.
+async function onInstanceChange(key, value) {
+  const platform = Object.keys(INSTANCE_KEYS).find(p => INSTANCE_KEYS[p] === key);
+  if (!platform) return;
+  instances[platform] = normHost(value, DEFAULT_INSTANCES[platform]);
+  await applyRules();
+}
 
 W.runtime.onMessage.addListener((msg, sender) => {
   if (!msg || !sender || sender.id !== W.runtime.id) return;
   if (msg.type === 'set-instance') {
     if (sender.tab) return;
-    setInstance(msg.platform, msg.domain);
-    return;
+    // Resolve only after the DNR rules match the new host, so the popup can
+    // show "Saved" for a state that actually took effect.
+    return setInstance(msg.platform, msg.domain)
+      .then(() => ({ domain: instances[msg.platform] }));
   }
   if (msg.type === 'get-instances') {
     // Read through storage: the popup may wake a worker that has not run

@@ -25,9 +25,41 @@ const INSTANCE_INFO = {
   },
 };
 
+const INSTANCE_KEYS = { x: 'nitter_instance', instagram: 'kittygram_instance' };
+
 const list = document.getElementById('list');
 let settingsPanel = null;
 let instances = {};
+
+// Same rule the background applies: accept a pasted URL, keep the host.
+function hostOnly(value, fallback) {
+  const s = String(value || '').trim().toLowerCase()
+    .replace(/^[a-z]+:\/\//, '')
+    .split(/[/?#]/)[0];
+  return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(s) ? s : (fallback || null);
+}
+
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms)),
+  ]);
+}
+
+// MV3 background is a non-persistent event page: a message sent while it is
+// terminated/starting is rejected ("Receiving end does not exist") instead of
+// waiting for it. Retry once, then fall back to storage, which the background
+// re-reads on wake.
+async function saveInstance(platform, domain) {
+  const payload = { type: 'set-instance', platform, domain };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const ack = await withTimeout(W.runtime.sendMessage(payload), 1200).catch(() => null);
+    if (ack) return true;
+    await new Promise(r => setTimeout(r, 150));
+  }
+  await W.storage.local.set({ [INSTANCE_KEYS[platform]]: domain }).catch(() => {});
+  return false;
+}
 
 function createSettingsPanel(platform) {
   const info = INSTANCE_INFO[platform];
@@ -50,7 +82,10 @@ function createSettingsPanel(platform) {
 
   const hint = document.createElement('p');
   hint.className = 'inst-hint';
-  hint.textContent = 'Instance list: ';
+  const err = document.createElement('span');
+  err.className = 'inst-err';
+  hint.appendChild(err);
+  hint.appendChild(document.createTextNode('Instance list: '));
   info.links.forEach(([label, href], i) => {
     if (i) hint.appendChild(document.createTextNode(' '));
     const a = document.createElement('a');
@@ -62,10 +97,41 @@ function createSettingsPanel(platform) {
   });
   panel.appendChild(hint);
 
-  save.addEventListener('click', () => {
-    W.runtime.sendMessage({ type: 'set-instance', platform, domain: input.value })
-      .catch(() => {});
-    panel.classList.remove('open');
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') { ev.preventDefault(); save.click(); }
+  });
+
+  save.addEventListener('click', async () => {
+    const domain = hostOnly(input.value);
+    if (!domain) {
+      err.textContent = 'Needs a host like frontend.example.org. ';
+      return;
+    }
+    err.textContent = '';
+    save.disabled = true;
+    save.textContent = 'Saving…';
+
+    await saveInstance(platform, domain);
+
+    // Storage is the source of truth; only claim success if it landed.
+    const stored = await W.storage.local.get(INSTANCE_KEYS[platform])
+      .then(t => t[INSTANCE_KEYS[platform]], () => null);
+    if (stored !== domain) {
+      err.textContent = 'Save failed, try again. ';
+      save.textContent = 'Save';
+      save.disabled = false;
+      return;
+    }
+
+    instances[platform] = domain;
+    save.textContent = 'Saved ✓';
+    save.classList.add('saved');
+    setTimeout(() => {
+      panel.classList.remove('open');
+      save.classList.remove('saved');
+      save.textContent = 'Save';
+      save.disabled = false;
+    }, 900);
   });
 
   return panel;
